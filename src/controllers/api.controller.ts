@@ -65,6 +65,32 @@ router.get('/video/getinfo/:redditPostId', (req, res) => {
     });
 });
 
+router.get('/video/getnew', (req, res) => {
+    if(!authorized(req)) return response(res, HttpStatus.FORBIDDEN, 'Unauthorized');
+    
+    Video.findAll({
+        where: {
+            status: Status.NewRequest
+        },
+        limit: 3 // let's try and handle no more than a few for each time we poll
+    })
+        .then(videos => {
+            let data = [];
+
+            videos.forEach(vid => {
+                data.push({
+                    id: vid.id,
+                    redditPostId: vid.redditPostId,
+                    status: vid.status,
+                    views: vid.views,
+                    lastView: vid.lastView
+                });
+            });
+
+            return response(res, HttpStatus.OK, 'OK', data);
+        });
+});
+
 router.put('/video/add', (req, res) => {
     if(!authorized(req)) return response(res, HttpStatus.FORBIDDEN, 'Unauthorized');
 
