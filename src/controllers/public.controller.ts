@@ -23,8 +23,8 @@ router.get('/:redditPostId', (req: Request, res: Response) => {
             return res.status(HttpStatus.OK).render('show', {
                 title: 'a-mirror',
                 redditPostId: vid.redditPostId,
-                videoLocation: "https://cdn.a-mirror.clutch22.me/video/" + vid.redditPostId + ".mp4",
-                posterLocation: "https://cdn.a-mirror.clutch22.me/img/poster.png",
+                videoLocation: "https://cdn4a-mirror.clutch22.me/video/" + vid.redditPostId + ".mp4",
+                posterLocation: "https://cdn4a-mirror.clutch22.me/img/poster.png",
             });
         }
 
