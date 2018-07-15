@@ -16,8 +16,32 @@ const router: Router = Router();
  * @param req The request to evaluate
  */
 function authorized(req) {
+    if(req.method === 'GET')
+        return req.headers.token === appToken;
+
     return req.body && req.body.token === appToken;
 }
+
+router.get('/debug/video/getall', (req, res) => {
+    if(!authorized(req)) return response(res, HttpStatus.FORBIDDEN, 'Unauthorized');
+
+    Video.findAll()
+        .then((videos) => {
+            let data = [];
+
+            videos.forEach(vid => {
+                data.push({
+                    id: vid.id,
+                    redditPostId: vid.redditPostId,
+                    status: vid.status,
+                    views: vid.views,
+                    lastView: vid.lastView
+                });
+            });
+
+            res.status(HttpStatus.OK).send(data);
+        });
+});
 
 router.get('/video/getinfo/:redditPostId', (req, res) => {
     let redditPostId = req.params.redditPostId;
