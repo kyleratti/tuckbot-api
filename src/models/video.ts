@@ -2,6 +2,7 @@ import {Table, Model, Column, CreatedAt, UpdatedAt, DeletedAt, DataType} from 's
 
 export enum Status {
     NewRequest = 0,
+    CantRetrieve = 1000,
 
     Downloading = 10,
     DownloadingFailed = 11,
