@@ -149,7 +149,9 @@ router.post('/video/update', (req, res) => {
     Video.update(
         updatedData,
         {
-            where: data.redditPostId
+            where: {
+                redditPostId: data.redditPostId
+            }
         })
         .then(rowsUpdated => {
             return response(res, HttpStatus.OK, 'Updated record successfully');
