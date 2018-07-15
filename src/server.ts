@@ -6,6 +6,8 @@ import { APIController, PublicController } from './controllers';
 import * as configurator from './configurator';
 import { Database } from './db/database';
 
+import os from 'os';
+
 // load config
 const config = configurator.load();
 
@@ -37,4 +39,22 @@ export default class Server {
             console.log(`Listening at http://127.0.0.1:${this.port}`);
         })
     }
+}
+
+/**
+ * Sends a response to the HTTP request
+ * @param res The response
+ * @param status The HTTP status code to send
+ * @param message The message to send with the status data
+ * @param data The data to respond to the request with
+ */
+export function response(res, status, message, data?) {
+    return res.status(status).send({
+        data: data,
+        status: {
+            code: status,
+            message: message,
+            servedBy: os.hostname().split('.')[0]
+        }
+    });
 }

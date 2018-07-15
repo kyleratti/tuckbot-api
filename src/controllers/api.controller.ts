@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
-import os from 'os';
+import { response } from "../server";
 
 import * as configurator from '../configurator';
 
@@ -17,24 +17,6 @@ const router: Router = Router();
  */
 function authorized(req) {
     return req.body && req.body.token === appToken;
-}
-
-/**
- * Sends a response to the HTTP request
- * @param res The response
- * @param status The HTTP status code to send
- * @param message The message to send with the status data
- * @param data The data to respond to the request with
- */
-function response(res, status, message, data?) {
-    return res.status(status).send({
-        data: data,
-        status: {
-            code: status,
-            message: message,
-            servedBy: os.hostname().split('.')[0]
-        }
-    });
 }
 
 router.get('/video/getinfo/:redditPostId', (req, res) => {
