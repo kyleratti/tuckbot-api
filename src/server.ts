@@ -20,7 +20,7 @@ export default class Server {
         let app = express();
         let port = config.app.port || 3000;
 
-        app.use(bodyParser.urlencoded());
+        app.use(bodyParser.urlencoded({ extended: true  }));
         app.use(bodyParser.json());
 
         app.use('/', PublicController);

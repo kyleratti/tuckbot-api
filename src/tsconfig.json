@@ -13,6 +13,7 @@
       "declaration": true,
       "declarationDir": "../dts",
       "sourceMap": true,
+      "keyofStringsOnly": true
     },
     "exclude": [  
     ]

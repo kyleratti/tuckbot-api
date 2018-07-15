@@ -1,65 +1,105 @@
 import { Router, Request, Response } from 'express';
+import HttpStatus from 'http-status-codes';
+import os from 'os';
 
 import * as configurator from '../configurator';
 
-import { database } from '../server';
-import * as Video from '../models/video';
+import {Video, Status} from '../models/video';
 
 const config = configurator.load();
 const appToken = config.app.auth.token;
 
 const router: Router = Router();
 
+/**
+ * Checks if the specified request is authorized
+ * @param req The request to evaluate
+ */
+function authorized(req) {
+    return req.body && req.body.token === appToken;
+}
+
+/**
+ * Sends a response to the HTTP request
+ * @param res The response
+ * @param status The HTTP status code to send
+ * @param message The message to send with the status data
+ * @param data The data to respond to the request with
+ */
+function response(res, status, message, data?) {
+    return res.status(status).send({
+        data: data,
+        status: {
+            code: status,
+            message: message,
+            servedBy: os.hostname().split('.')[0]
+        }
+    });
+}
+
 router.get('/video/getinfo/:redditPostId', (req, res) => {
-    // TODO: retrieve video info from DB, display error or display video
     let redditPostId = req.params.redditPostId;
 
-    Video.findAll()
+    Video.find({
+        where: {
+            redditPostId: redditPostId
+        },
+        limit: 1
+    }).then(vid => {
+        if(!vid) return response(res, HttpStatus.NOT_FOUND, 'Video not found');
 
-    // 404 if not found
+        let data = {
+            redditPostId: vid.redditPostId,
+            status: vid.status,
+            views: vid.views,
+            lastView: vid.lastView
+        }
 
-    // 200 if OK
-    /*
-    {
-        id,
-        redditPostId,
-        status,
-        views,
-        lastView
-    }
-    */
-
-    res.status(200);
-    res.send('API:retrieve post info for ' + redditPostId);
+        return response(res, HttpStatus.OK, 'OK', data);
+    });
 });
 
 router.put('/video/add', (req, res) => {
-    let token = req.body.token;
+    if(!authorized(req)) return response(res, HttpStatus.FORBIDDEN, 'Unauthorized');
 
-    /*
-    {
-        redditPostId,
-        status
-    }
-    */
+    let data = req.body;
+
+    Video.find({
+        where: {
+            redditPostId: data.redditPostId
+        },
+        limit: 1
+    }).then(vid => {
+        if(vid) return response(res, HttpStatus.CONFLICT, 'Video already exists', {
+            redditPostId: data.redditPostId
+        });
+
+        let newVid = Video.create({
+            redditPostId: data.redditPostId,
+            status: Status.NewRequest
+        }).then(newVid => {
+            return response(res, HttpStatus.CREATED, 'Created video request', {
+                id: newVid.id,
+                redditPostId: newVid.redditPostId,
+                status: newVid.status,
+                views: newVid.views,
+                lastView: newVid.lastView
+            });
+        });
+    });
 });
 
 router.post('/video/update', (req, res) => {
-    // TODO: validate token
     // TODO: check data
     // TODO: update records
 
-    if(req.body.token !== appToken) return res.status(403).send({
-        error: "Unauthorized"
-    });
+    if(!authorized(req)) return res.status(HttpStatus.UNAUTHORIZED).send({error: "Unauthorized"});
 
     let redditPostId = req.body.redditPostId;
 
-    res.status(200);
-    res.send({
-        message: "Updated record successfully",
+    return response(res, HttpStatus.OK, 'Updated record successfully', {
         redditPostId: redditPostId
-    })
+    });
 });
 
 export const APIController: Router = router;

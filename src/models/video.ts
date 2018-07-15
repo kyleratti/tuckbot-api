@@ -1,41 +1,52 @@
-import sequelize from 'sequelize';
-import { database } from "../server";
+import {Table, Model, Column, CreatedAt, UpdatedAt, DeletedAt, DataType} from 'sequelize-typescript';
 
-/*
-    {
-        id,
-        redditPostId,
-        status,
-        views,
-        lastView
-    }
-*/
+export enum Status {
+    NewRequest = 0,
 
-let Video = database.db.define('video', {
-    id: {
-        type: sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    redditPostId: {
-        type: sequelize.STRING,
+    Downloading = 10,
+    DownloadingFailed = 11,
+
+    Transcoding = 20,
+    TranscodingFailed = 21,
+
+    ReadyLocal = 100,
+}
+
+@Table({
+    timestamps: true
+})
+export class Video extends Model<Video> {
+    @Column({
         allowNull: false,
         unique: true
-    },
-    status: {
-        type: sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: -1
-    },
-    views: {
-        type: sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 0
-    },
-    lastView: {
-        type: sequelize.DATE,
-        allowNull: true
-    }
-});
+    })
+    redditPostId: string;
 
-export sequelize.Model Video;
+    @Column({
+        allowNull: true,
+        defaultValue: -1
+    })
+    status: number;
+
+    @Column({
+        allowNull: true,
+        defaultValue: 0
+    })
+    views: number;
+    
+    @Column({
+        allowNull: true
+    })
+    lastView: Date;
+
+    @CreatedAt
+    createdAt: Date;
+ 
+    @UpdatedAt
+    updatedAt: Date;
+  
+    @DeletedAt
+    deletedAt: Date;
+}
+
+//export default class Video extends Model<Video> {}
