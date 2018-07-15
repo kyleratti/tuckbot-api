@@ -67,3 +67,4 @@ typings/
 /lib/
 /storage/
 ormconfig.json
+dts/
