@@ -1,4 +1,4 @@
-import {Table, Model, Column, CreatedAt, UpdatedAt, DeletedAt, DataType} from 'sequelize-typescript';
+import {Table, Model, Column, CreatedAt, UpdatedAt, DeletedAt} from 'sequelize-typescript';
 
 export enum Status {
     NewRequest = 0,
