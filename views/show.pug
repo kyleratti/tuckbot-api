@@ -1,0 +1,7 @@
+extends layout
+
+block content
+    .video
+        video(controls, autoplay, poster=posterLocation, src=videoLocation)
+    .reddit
+        a(href="https://reddit.com/" + redditPostId) Back to reddit
