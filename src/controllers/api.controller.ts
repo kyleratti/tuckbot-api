@@ -33,6 +33,7 @@ router.get('/debug/video/getall', (req, res) => {
                 data.push({
                     id: vid.id,
                     redditPostId: vid.redditPostId,
+                    videoUrl: vid.videoUrl,
                     status: vid.status,
                     views: vid.views,
                     lastView: vid.lastView
@@ -56,6 +57,7 @@ router.get('/video/getinfo/:redditPostId', (req, res) => {
 
         let data = {
             redditPostId: vid.redditPostId,
+            videoUrl: vid.videoUrl,
             status: vid.status,
             views: vid.views,
             lastView: vid.lastView
@@ -67,7 +69,7 @@ router.get('/video/getinfo/:redditPostId', (req, res) => {
 
 router.get('/video/getnew', (req, res) => {
     if(!authorized(req)) return response(res, HttpStatus.FORBIDDEN, 'Unauthorized');
-    
+
     Video.findAll({
         where: {
             status: Status.NewRequest
@@ -80,6 +82,7 @@ router.get('/video/getnew', (req, res) => {
             videos.forEach(vid => {
                 data.push({
                     id: vid.id,
+                    videoUrl: vid.videoUrl,
                     redditPostId: vid.redditPostId,
                     status: vid.status,
                     views: vid.views,
@@ -103,16 +106,19 @@ router.put('/video/add', (req, res) => {
         limit: 1
     }).then(vid => {
         if(vid) return response(res, HttpStatus.CONFLICT, 'Video already exists', {
-            redditPostId: data.redditPostId
+            redditPostId: data.redditPostId,
+            videoUrl: data.videoUrl
         });
 
         let newVid = Video.create({
             redditPostId: data.redditPostId,
+            videoUrl: data.videoUrl,
             status: Status.NewRequest
         }).then(newVid => {
             return response(res, HttpStatus.CREATED, 'Created video request', {
                 id: newVid.id,
                 redditPostId: newVid.redditPostId,
+                videoUrl: newVid.videoUrl,
                 status: newVid.status,
                 views: newVid.views,
                 lastView: newVid.lastView

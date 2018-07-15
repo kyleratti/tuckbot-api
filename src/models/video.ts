@@ -22,6 +22,11 @@ export class Video extends Model<Video> {
     redditPostId: string;
 
     @Column({
+        allowNull: false
+    })
+    videoUrl: string;
+
+    @Column({
         allowNull: true,
         defaultValue: -1
     })
