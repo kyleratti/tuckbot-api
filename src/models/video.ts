@@ -2,15 +2,13 @@ import {Table, Model, Column, CreatedAt, UpdatedAt, DeletedAt, DataType} from 's
 
 export enum Status {
     NewRequest = 0,
-    CantRetrieve = 1000,
-
     Downloading = 10,
-    DownloadingFailed = 11,
-
     Transcoding = 20,
-    TranscodingFailed = 21,
+    Ready = 50,
 
-    ReadyLocal = 100,
+    // Errors
+    DownloadingFailed = 100,
+    TranscodingFailed = 200,
 }
 
 @Table({
@@ -49,5 +47,3 @@ export class Video extends Model<Video> {
     @DeletedAt
     deletedAt: Date;
 }
-
-//export default class Video extends Model<Video> {}
