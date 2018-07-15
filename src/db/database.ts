@@ -15,7 +15,8 @@ export class Database {
             dialect: 'sqlite',
             username: 'root',
             password: '',
-            storage: dbLocation
+            storage: dbLocation,
+            logging: false
         });
         db.addModels([Video]);
 
