@@ -20,15 +20,16 @@ router.get('/:redditPostId', (req: Request, res: Response) => {
         limit: 1
     }).then(vid => {
         if(vid) {
-            res.status(HttpStatus.OK).render('show', {
-                redditPostId: redditPostId,
-                posterLocation: 'http://google.com',
-                videoLocation: 'http://google.com'
+            return res.status(HttpStatus.OK).render('show', {
+                title: 'a-mirror',
+                redditPostId: vid.redditPostId,
+                videoLocation: "https://cdn.a-mirror.clutch22.me/video/" + vid.redditPostId + ".mp4",
+                posterLocation: "https://cdn.a-mirror.clutch22.me/img/poster.png",
             });
         }
 
         return res.status(HttpStatus.NOT_FOUND).render('errors/404', {
-            message: 'This video was not found in the database. Typically this means a-mirror has not been asked to mirror this post or doesn\'t have an agreement in place with the subreddit moderators to mirror links.'
+            message: 'This video was not found in the database. Typically this means a-mirror has not been asked to mirror this post or doesn\'t have an agreement in place with the subreddit moderators to mirror links reliably.'
         });
     });
 });
