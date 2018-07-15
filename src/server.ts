@@ -25,6 +25,8 @@ export default class Server {
         app.use(bodyParser.urlencoded({ extended: true  }));
         app.use(bodyParser.json());
 
+        app.set('view engine', 'pug');
+
         app.use('/', PublicController);
         app.use('/api', APIController);
 
