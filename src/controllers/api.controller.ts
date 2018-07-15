@@ -131,13 +131,32 @@ router.post('/video/update', (req, res) => {
     // TODO: check data
     // TODO: update records
 
-    if(!authorized(req)) return res.status(HttpStatus.UNAUTHORIZED).send({error: "Unauthorized"});
+    if(!authorized(req)) return response(res, HttpStatus.UNAUTHORIZED, 'Unauthorized');
 
-    let redditPostId = req.body.redditPostId;
+    let data = req.body;
 
-    return response(res, HttpStatus.OK, 'Updated record successfully', {
-        redditPostId: redditPostId
-    });
+    let updatedData = {}
+
+    if(data.status)
+        updatedData['status'] = data.status;
+
+    if(data.views)
+        updatedData['views'] = data.views;
+
+    if(data.lastView)
+        updatedData['lastView'] = data.lastView;
+
+    Video.update(
+        updatedData,
+        {
+            where: data.redditPostId
+        })
+        .then(rowsUpdated => {
+            return response(res, HttpStatus.OK, 'Updated record successfully');
+        })
+        .catch(err => {
+            return response(res, HttpStatus.INTERNAL_SERVER_ERROR, err);
+        })
 });
 
 export const APIController: Router = router;
