@@ -7,6 +7,7 @@ import * as configurator from './configurator';
 import { Database } from './db/database';
 
 import os from 'os';
+import path from 'path';
 
 // load config
 const config = configurator.load();
@@ -14,15 +15,36 @@ const config = configurator.load();
 // load database
 export var database = new Database(config.database.location);
 
-export default class Server {
+export class CdnServer {
+    private app: express.Application;
+    private port: Number;
+
+    constructor() {
+        let app = express();
+        let port = config.app.cdnPort || 3001;
+
+        this.app = app;
+        this.port = port;
+    }
+
+    start() {
+        this.app.use('/img', express.static(path.join(__dirname, '/../public/img')));
+
+        this.app.listen(this.port, () => {
+            console.log(`Listening for CDN requests at http://127.0.0.1:${this.port}`);
+        });
+    }
+}
+
+export class WebServer {
     private app: express.Application;
     private port: Number;
     
     constructor() {
         let app = express();
-        let port = config.app.port || 3000;
+        let port = config.app.webPort || 3000;
 
-        app.use(bodyParser.urlencoded({ extended: true  }));
+        app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());
 
         app.set('view engine', 'pug');
@@ -38,7 +60,7 @@ export default class Server {
         database.connect();
 
         this.app.listen(this.port, () => {
-            console.log(`Listening at http://127.0.0.1:${this.port}`);
+            console.log(`Listening for web requests at http://127.0.0.1:${this.port}`);
         })
     }
 }

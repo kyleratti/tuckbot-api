@@ -1,8 +1,11 @@
-import Server from './server';
+import { WebServer, CdnServer } from './server';
 
 function run() {
-    let svr = new Server();
-    svr.start();
+    let webServer = new WebServer();
+    webServer.start();
+
+    let cdnServer = new CdnServer();
+    cdnServer.start();
 }
 
 run();

@@ -23,8 +23,10 @@ export function load() {
                 /** The token used to authenticate private API requests */
                 token: String(process.env.AUTH_TOKEN)
             },
-            /** The port to listen on */
-            port: Number(process.env.PORT)
+            /** The port to listen on for web and API requests */
+            webPort: Number(process.env.WEB_PORT),
+            /** The port to listen on for CDN requests */
+            cdnPort: Number(process.env.CDN_PORT)
         },
 
         /** Database configuration */
