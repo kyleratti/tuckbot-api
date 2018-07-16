@@ -30,7 +30,9 @@ export function load() {
             /** The port to listen on for api requests */
             apiPort: Number(process.env.API_PORT),
             /** The base url */
-            baseDomain: String(process.env.BASE_DOMAIN)
+            baseDomain: String(process.env.BASE_DOMAIN),
+            /** The environment the app is running in */
+            environment: String(process.env.ENVIRONMENT)
         },
 
         /** Database configuration */
