@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
 import { response } from "../server";
 
+import {Op} from 'sequelize';
+
 import * as configurator from '../configurator';
 
 import {Video, Status} from '../models/video';
@@ -94,6 +96,34 @@ router.get('/video/getnew', (req, res) => {
         });
 });
 
+router.get('/video/getmirrored', (req, res) => {
+    if(!authorized(req)) return response(res, HttpStatus.FORBIDDEN, 'Unauthorized');
+
+    Video.findAll({
+        where: {
+            [Op.or]: [
+                {status: Status.LocallyMirrored},
+            ],
+        },
+        limit: 5 // to help prevent hitting the API throttle limit
+    }).then(videos => {
+        let data = [];
+
+        videos.forEach(vid => {
+            data.push({
+                id: vid.id,
+                videoUrl: vid.videoUrl,
+                redditPostId: vid.redditPostId,
+                status: vid.status,
+                views: vid.views,
+                lastView: vid.lastView
+            });
+        });
+
+        return response(res, HttpStatus.OK, 'OK', data);
+    })
+});
+
 router.put('/video/add', (req, res) => {
     if(!authorized(req)) return response(res, HttpStatus.FORBIDDEN, 'Unauthorized');
 
@@ -128,9 +158,6 @@ router.put('/video/add', (req, res) => {
 });
 
 router.post('/video/update', (req, res) => {
-    // TODO: check data
-    // TODO: update records
-
     if(!authorized(req)) return response(res, HttpStatus.UNAUTHORIZED, 'Unauthorized');
 
     let data = req.body;
@@ -159,6 +186,20 @@ router.post('/video/update', (req, res) => {
         .catch(err => {
             return response(res, HttpStatus.INTERNAL_SERVER_ERROR, err);
         })
+});
+
+router.put('/video/upload', (req, res) => {
+    if(!authorized(req)) return response(res, HttpStatus.UNAUTHORIZED, 'Unauthorized');
+
+    if(!req.files) return response(res, HttpStatus.UNPROCESSABLE_ENTITY, 'No file was attached');
+    if(!req.body.redditPostId) return response(res, HttpStatus.UNPROCESSABLE_ENTITY, 'No reddit post id specified');
+
+    let redditPostId = req.body.redditPostId;
+    let videoFile = req.files.video;
+
+    // TODO: determine storage method
+
+    return response(res, HttpStatus.INTERNAL_SERVER_ERROR, 'File not not picked up by processor; request discarded');
 });
 
 export const APIController: Router = router;
