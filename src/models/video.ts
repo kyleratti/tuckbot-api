@@ -4,7 +4,7 @@ export enum Status {
     NewRequest = 0,
     Downloading = 10,
     Transcoding = 20,
-    Ready = 50,
+    MirroredLocally = 50,
 
     // Errors
     DownloadingFailed = 100,
