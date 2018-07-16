@@ -4,10 +4,14 @@ export enum Status {
     NewRequest = 0,
     Downloading = 10,
     Transcoding = 20,
-    MirroredLocally = 50,
+
+    LocallyMirrored = 40,
+
+    PostedLocalMirror = 50,
 
     // Errors
     DownloadingFailed = 100,
+    VideoUnavailable = 101,
     TranscodingFailed = 200,
 }
 
