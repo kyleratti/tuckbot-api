@@ -1,4 +1,4 @@
-import { WebServer, CdnServer } from './server';
+import { WebServer, CdnServer, ApiServer } from './server';
 
 function run() {
     let webServer = new WebServer();
@@ -6,6 +6,9 @@ function run() {
 
     let cdnServer = new CdnServer();
     cdnServer.start();
+
+    let apiServer = new ApiServer();
+    apiServer.start();
 }
 
 run();
