@@ -28,7 +28,9 @@ export function load() {
             /** The port to listen on for CDN requests */
             cdnPort: Number(process.env.CDN_PORT),
             /** The port to listen on for api requests */
-            apiPort: Number(process.env.API_PORT)
+            apiPort: Number(process.env.API_PORT),
+            /** The base url */
+            baseDomain: String(process.env.BASE_DOMAIN)
         },
 
         /** Database configuration */
