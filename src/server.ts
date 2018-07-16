@@ -1,4 +1,5 @@
 import express from 'express';
+import fileUpload from 'express-fileupload';
 import bodyParser from 'body-parser';
 
 import { APIController, PublicController } from './controllers';
@@ -48,6 +49,7 @@ export class WebServer {
 
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());
+        app.use(fileUpload());
 
         app.set('view engine', 'pug');
 
