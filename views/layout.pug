@@ -6,6 +6,7 @@ html(lang='en')
         meta(name='viewport', content='width=device-width, initial-scale=1.0')
         title #{title}
         link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css', integrity='sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B', crossorigin='anonymous')
+        link(rel='stylesheet', href='https://cdn4a-mirror.clutch22.me/css/style.css')
 
     body
         include partials/header
@@ -13,4 +14,5 @@ html(lang='en')
         .container
             block content
 
-        include partials/footer
+        .container
+            include partials/footer
