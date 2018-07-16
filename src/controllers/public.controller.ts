@@ -1,7 +1,10 @@
 import { Router, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
+import os from 'os';
 
-import { Video } from "../models/video";
+import {Op} from 'sequelize';
+
+import { Video, Status } from "../models/video";
 
 const router: Router = Router();
 
@@ -15,7 +18,11 @@ router.get('/:redditPostId', (req: Request, res: Response) => {
 
     Video.find({
         where: {
-            redditPostId: redditPostId
+            redditPostId: redditPostId,
+            [Op.or]: [
+                {status: Status.LocallyMirrored},
+                {status: Status.PostedLocalMirror}
+            ]
         },
         limit: 1
     }).then(vid => {
@@ -25,11 +32,15 @@ router.get('/:redditPostId', (req: Request, res: Response) => {
                 redditPostId: vid.redditPostId,
                 videoLocation: "https://cdn4a-mirror.clutch22.me/video/" + vid.redditPostId + ".mp4",
                 posterLocation: "https://cdn4a-mirror.clutch22.me/img/poster.png",
+
+                serverName: os.hostname().split('.')[0],
             });
         }
 
         return res.status(HttpStatus.NOT_FOUND).render('errors/404', {
-            message: 'This video was not found in the database. Typically this means a-mirror has not been asked to mirror this post or doesn\'t have an agreement in place with the subreddit moderators to mirror links reliably.'
+            message: 'This video was not found in the database. Typically this means a-mirror has not been asked to mirror this post or doesn\'t have an agreement in place with the subreddit moderators to mirror links reliably.',
+
+            serverName: os.hostname().split('.')[0]
         });
     });
 });
