@@ -29,6 +29,8 @@ export class CdnServer {
 
     start() {
         this.app.use('/img', express.static(path.join(__dirname, '/../public/img')));
+        this.app.use('/css', express.static(path.join(__dirname, '/../public/css')));
+        this.app.use('/video', express.static(config.app.file.local.storageDir));
 
         this.app.listen(this.port, () => {
             console.log(`Listening for CDN requests at http://127.0.0.1:${this.port}`);
