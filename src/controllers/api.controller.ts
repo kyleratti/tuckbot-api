@@ -216,9 +216,6 @@ router.put('/video/upload', (req, res) => {
             return response(res, HttpStatus.OK, 'File uploaded successfully');
         });
     } else {
-        // TODO: determine storage method
-        // TODO: store file
-
         return response(res, HttpStatus.INTERNAL_SERVER_ERROR, 'File not not picked up by processor; request discarded');
     }
 });
