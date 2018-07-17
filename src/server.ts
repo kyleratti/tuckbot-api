@@ -16,6 +16,23 @@ const config = configurator.load();
 // load database
 export var database = new Database(config.database.location);
 
+export enum UrlType {
+    /** api requests */
+    Api = 'api.',
+    /** cdn requests */
+    Cdn = 'cdn.',
+    /** web requests */
+    Web = ''
+}
+
+/**
+ * Combines the strings to the base url
+ * @param args The strings to combine
+ */
+export function makeUrl(urlType: UrlType, ...args: string[]) {
+    return (config.app.environment === 'local' ? 'https' : 'http') + '://' + urlType + config.app.baseDomain + args.join('');
+}
+
 export class WebServer {
     private app: express.Application;
     private port: number;
@@ -78,7 +95,11 @@ export class ApiServer {
 
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());
-        app.use(fileUpload());
+        app.use(fileUpload({
+            safeFileNames: true,
+            preserveExtension: 3,
+            abortOnLimit: true
+        }));
 
         app.use('/', APIController);
 
