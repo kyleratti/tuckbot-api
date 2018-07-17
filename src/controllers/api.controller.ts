@@ -3,6 +3,8 @@ import HttpStatus from 'http-status-codes';
 import { response } from "../server";
 
 import {Op} from 'sequelize';
+import path from 'path';
+import fs from 'fs';
 
 import * as configurator from '../configurator';
 
@@ -195,11 +197,30 @@ router.put('/video/upload', (req, res) => {
     if(!req.body.redditPostId) return response(res, HttpStatus.UNPROCESSABLE_ENTITY, 'No reddit post id specified');
 
     let redditPostId = req.body.redditPostId;
-    let videoFile = req.files.video;
+    let videoFile:any = req.files.video;
+    let fileExt = path.extname(videoFile.name);
 
-    // TODO: determine storage method
+    if(config.app.file.local.storageDir) {
+        let storeFolder = config.app.file.local.storageDir;
+        let storePath = path.resolve(storeFolder, redditPostId + fileExt);
 
-    return response(res, HttpStatus.INTERNAL_SERVER_ERROR, 'File not not picked up by processor; request discarded');
+        if (!fs.existsSync(storeFolder))
+            fs.mkdirSync(storeFolder);
+
+        videoFile.mv(storePath, (err) => {
+            if(err) {
+                console.log(`failed: ${err}`);
+                return response(res, HttpStatus.INTERNAL_SERVER_ERROR, 'Error processing upload: ' + err);
+            }
+
+            return response(res, HttpStatus.OK, 'File uploaded successfully');
+        });
+    } else {
+        // TODO: determine storage method
+        // TODO: store file
+
+        return response(res, HttpStatus.INTERNAL_SERVER_ERROR, 'File not not picked up by processor; request discarded');
+    }
 });
 
 export const APIController: Router = router;
