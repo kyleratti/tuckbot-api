@@ -22,11 +22,3 @@ video {
     padding: 2px;
     background-color: #525252;
 }
-
-.reddit-logo {
-    display: inline-block;
-    background-image: url(https://cdn.amirror.link/img/reddit_logo.png);
-    background-repeat: no-repeat;
-    width: 24px;
-    height: 24px;
-}
