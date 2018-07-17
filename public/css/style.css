@@ -16,8 +16,8 @@ a:hover {
 }
 
 video {
-    max-width: 90%;
-    max-height: 75%;
+    max-width: 800px;
+    max-height: 600px;
     border: 2px solid #444;
 }
 
