@@ -19,6 +19,8 @@ video {
     max-width: 800px;
     max-height: 600px;
     border: 2px solid #444;
+    padding: 2px;
+    background-color: #525252;
 }
 
 .reddit-logo {
