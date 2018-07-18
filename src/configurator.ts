@@ -9,20 +9,6 @@ export function load() {
     return {
         /** App configuration */
         app: {
-            file: {
-                /** The file storage mode */
-                storeMode: String(process.env.FILE_STORE_MODE),
-
-                /** Local file storage mode configuration */
-                local: {
-                    /** The local directory to store files in */
-                    storageDir: String(process.env.LOCAL_STORAGE_DIR),
-                }
-            },
-            auth: {
-                /** The token used to authenticate private API requests */
-                token: String(process.env.AUTH_TOKEN)
-            },
             /** The port to listen on for web requests */
             webPort: Number(process.env.WEB_PORT),
             /** The port to listen on for CDN requests */
@@ -35,9 +21,27 @@ export function load() {
             environment: String(process.env.ENVIRONMENT)
         },
 
+        /** Authentication configuration */
+        auth: {
+            /** The token used to authenticate private API requests */
+            token: String(process.env.AUTH_TOKEN)
+        },
+
         /** Database configuration */
         database: {
             location: String(process.env.DATABASE_LOCATION)
+        },
+
+        /** Storage configuration */
+        file: {
+            /** The file storage mode */
+            storeMode: String(process.env.FILE_STORE_MODE),
+
+            /** Local file storage mode configuration */
+            local: {
+                /** The local directory to store files in */
+                storageDir: String(process.env.LOCAL_STORAGE_DIR),
+            }
         },
 
         /** reddit configuration */

@@ -11,7 +11,7 @@ import os from 'os';
 import path from 'path';
 
 // load config
-const config = configurator.load();
+export const config = configurator.load();
 
 // load database
 export var database = new Database(config.database.location);
@@ -77,7 +77,7 @@ export class CdnServer {
     start() {
         this.app.use('/img', express.static(path.join(__dirname, '/../public/img')));
         this.app.use('/css', express.static(path.join(__dirname, '/../public/css')));
-        this.app.use('/video', express.static(config.app.file.local.storageDir));
+        this.app.use('/video', express.static(config.file.local.storageDir));
 
         this.app.listen(this.port, () => {
             console.log(`listening for cdn requests at http://127.0.0.1:${this.port}`);

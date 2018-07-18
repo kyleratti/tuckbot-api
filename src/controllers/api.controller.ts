@@ -6,12 +6,11 @@ import {Op} from 'sequelize';
 import path from 'path';
 import fs from 'fs';
 
-import * as configurator from '../configurator';
+import { config } from '../server';
 
 import {Video, Status} from '../models/video';
 
-const config = configurator.load();
-const appToken = config.app.auth.token;
+const appToken = config.auth.token;
 
 const router: Router = Router();
 
@@ -200,8 +199,8 @@ router.put('/video/upload', (req, res) => {
     let videoFile:any = req.files.video;
     let fileExt = path.extname(videoFile.name);
 
-    if(config.app.file.local.storageDir) {
-        let storeFolder = config.app.file.local.storageDir;
+    if(config.file.local.storageDir) {
+        let storeFolder = config.file.local.storageDir;
         let storePath = path.resolve(storeFolder, redditPostId + fileExt);
 
         if (!fs.existsSync(storeFolder))

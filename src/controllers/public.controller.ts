@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
 import os from 'os';
 
-import {Op} from 'sequelize';
+import { Op } from 'sequelize';
 
 import { Video, Status } from "../models/video";
 import { makeUrl, UrlType } from '../server';
