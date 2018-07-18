@@ -4,17 +4,14 @@ import bodyParser from 'body-parser';
 
 import { APIController, PublicController } from './controllers';
 
-import * as configurator from './configurator';
+import configurator from './configurator';
 import { Database } from './db/database';
 
 import os from 'os';
 import path from 'path';
 
-// load config
-export const config = configurator.load();
-
 // load database
-export var database = new Database(config.database.location);
+export var database = new Database(configurator.database.location);
 
 export enum UrlType {
     /** api requests */
@@ -30,7 +27,7 @@ export enum UrlType {
  * @param args The strings to combine
  */
 export function makeUrl(urlType: UrlType, ...args: string[]) {
-    return (config.app.environment === 'local' ? 'https' : 'http') + '://' + urlType + config.app.baseDomain + args.join('');
+    return (configurator.app.environment === 'local' ? 'https' : 'http') + '://' + urlType + configurator.app.baseDomain + args.join('');
 }
 
 export class WebServer {
@@ -39,7 +36,7 @@ export class WebServer {
     
     constructor() {
         let app = express();
-        let port = config.app.webPort || 3000;
+        let port = configurator.app.webPort || 3000;
 
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());
@@ -68,7 +65,7 @@ export class CdnServer {
 
     constructor() {
         let app = express();
-        let port = config.app.cdnPort || 3001;
+        let port = configurator.app.cdnPort || 3001;
 
         this.app = app;
         this.port = port;
@@ -77,7 +74,7 @@ export class CdnServer {
     start() {
         this.app.use('/img', express.static(path.join(__dirname, '/../public/img')));
         this.app.use('/css', express.static(path.join(__dirname, '/../public/css')));
-        this.app.use('/video', express.static(config.file.local.storageDir));
+        this.app.use('/video', express.static(configurator.file.local.storageDir));
 
         this.app.listen(this.port, () => {
             console.log(`listening for cdn requests at http://127.0.0.1:${this.port}`);
@@ -91,7 +88,7 @@ export class ApiServer {
  
     constructor() {
         let app = express();
-        let port = config.app.apiPort || 3002;
+        let port = configurator.app.apiPort || 3002;
 
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());

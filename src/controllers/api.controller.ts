@@ -1,16 +1,15 @@
 import { Router, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
-import { response } from "../server";
 
 import {Op} from 'sequelize';
 import path from 'path';
 import fs from 'fs';
 
-import { config } from '../server';
+import configurator from '../configurator';
+import { response } from "../server";
+import { Video, Status } from '../models/video';
 
-import {Video, Status} from '../models/video';
-
-const appToken = config.auth.token;
+const appToken = configurator.auth.token;
 
 const router: Router = Router();
 
@@ -199,8 +198,8 @@ router.put('/video/upload', (req, res) => {
     let videoFile:any = req.files.video;
     let fileExt = path.extname(videoFile.name);
 
-    if(config.file.local.storageDir) {
-        let storeFolder = config.file.local.storageDir;
+    if(configurator.file.local.storageDir) {
+        let storeFolder = configurator.file.local.storageDir;
         let storePath = path.resolve(storeFolder, redditPostId + fileExt);
 
         if (!fs.existsSync(storeFolder))

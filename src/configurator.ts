@@ -1,67 +1,64 @@
 import * as dotenv from 'dotenv';
 
-/** Loads the .env file into the environment and returns the current config */
-export function load() {
-    let result = dotenv.load();
-    if(result.error)
-        throw result.error
-    
-    return {
-        /** App configuration */
-        app: {
-            /** The port to listen on for web requests */
-            webPort: Number(process.env.WEB_PORT),
-            /** The port to listen on for CDN requests */
-            cdnPort: Number(process.env.CDN_PORT),
-            /** The port to listen on for api requests */
-            apiPort: Number(process.env.API_PORT),
-            /** The base url */
-            baseDomain: String(process.env.BASE_DOMAIN),
-            /** The environment the app is running in */
-            environment: String(process.env.ENVIRONMENT)
-        },
+let result = dotenv.load();
+if(result.error)
+    throw result.error;
 
-        /** Authentication configuration */
-        auth: {
-            /** The token used to authenticate private API requests */
-            token: String(process.env.AUTH_TOKEN)
-        },
+export default {
+    /** App configuration */
+    app: {
+        /** The port to listen on for web requests */
+        webPort: Number(process.env.WEB_PORT),
+        /** The port to listen on for CDN requests */
+        cdnPort: Number(process.env.CDN_PORT),
+        /** The port to listen on for api requests */
+        apiPort: Number(process.env.API_PORT),
+        /** The base url */
+        baseDomain: String(process.env.BASE_DOMAIN),
+        /** The environment the app is running in */
+        environment: String(process.env.ENVIRONMENT)
+    },
 
-        /** Database configuration */
-        database: {
-            location: String(process.env.DATABASE_LOCATION)
-        },
+    /** Authentication configuration */
+    auth: {
+        /** The token used to authenticate private API requests */
+        token: String(process.env.AUTH_TOKEN)
+    },
 
-        /** Storage configuration */
-        file: {
-            /** The file storage mode */
-            storeMode: String(process.env.FILE_STORE_MODE),
+    /** Database configuration */
+    database: {
+        location: String(process.env.DATABASE_LOCATION)
+    },
 
-            /** Local file storage mode configuration */
-            local: {
-                /** The local directory to store files in */
-                storageDir: String(process.env.LOCAL_STORAGE_DIR),
-            }
-        },
+    /** Storage configuration */
+    file: {
+        /** The file storage mode */
+        storeMode: String(process.env.FILE_STORE_MODE),
 
-        /** reddit configuration */
-        reddit: {
-            /** The client ID of the application */
-            clientID: String(process.env.REDDIT_CLIENT_ID),
-            /** The client secret of the application */
-            clientSecret: String(process.env.REDDIT_CLIENT_SECRET),
-            /** The username of the reddit account (bot account) */
-            username: String(process.env.REDDIT_USERNAME),
-            /** The password of the reddit account (bot account) */
-            password: String(process.env.REDDIT_PASSWORD),
-            /** The unique user agent to use with the reddit API */
-            userAgent: String(process.env.REDDIT_USER_AGENT),
-            /** An array of subreddits to scan and mirror content in */
-            scanSubsList: String(process.env.REDDIT_SCAN_SUBS).split(','),
-            /** Whether or not to scan comments for the mirror keyword */
-            scanComments: Boolean(process.env.REDDIT_SCAN_COMMENTS),
-            /** The mirror keyword to scan for */
-            scanKeyword: String(process.env.REDDIT_SCAN_KEYWORD),
+        /** Local file storage mode configuration */
+        local: {
+            /** The local directory to store files in */
+            storageDir: String(process.env.LOCAL_STORAGE_DIR),
         }
+    },
+
+    /** reddit configuration */
+    reddit: {
+        /** The client ID of the application */
+        clientID: String(process.env.REDDIT_CLIENT_ID),
+        /** The client secret of the application */
+        clientSecret: String(process.env.REDDIT_CLIENT_SECRET),
+        /** The username of the reddit account (bot account) */
+        username: String(process.env.REDDIT_USERNAME),
+        /** The password of the reddit account (bot account) */
+        password: String(process.env.REDDIT_PASSWORD),
+        /** The unique user agent to use with the reddit API */
+        userAgent: String(process.env.REDDIT_USER_AGENT),
+        /** An array of subreddits to scan and mirror content in */
+        scanSubsList: String(process.env.REDDIT_SCAN_SUBS).split(','),
+        /** Whether or not to scan comments for the mirror keyword */
+        scanComments: Boolean(process.env.REDDIT_SCAN_COMMENTS),
+        /** The mirror keyword to scan for */
+        scanKeyword: String(process.env.REDDIT_SCAN_KEYWORD),
     }
 }
