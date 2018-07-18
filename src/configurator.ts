@@ -7,14 +7,24 @@ if(result.error)
 export default {
     /** App configuration */
     app: {
+        /** The full URL to the web endpoint */
+        webUrl: String(process.env.WEB_URL),
         /** The port to listen on for web requests */
         webPort: Number(process.env.WEB_PORT),
+
+        /** The full URL to the cdn endpoint */
+        cdnUrl: String(process.env.CDN_URL),
         /** The port to listen on for CDN requests */
         cdnPort: Number(process.env.CDN_PORT),
+
+        /** The full URL to the api endpoint */
+        apiUrl: String(process.env.API_URL),
         /** The port to listen on for api requests */
         apiPort: Number(process.env.API_PORT),
-        /** The base url */
+
+        /** The base domain */
         baseDomain: String(process.env.BASE_DOMAIN),
+        
         /** The environment the app is running in */
         environment: String(process.env.ENVIRONMENT)
     },
