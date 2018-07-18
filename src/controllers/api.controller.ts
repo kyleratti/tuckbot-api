@@ -124,7 +124,7 @@ router.get('/video/getmirrored', (req, res) => {
     })
 });
 
-router.put('/video/add', (req, res) => {
+router.put('/video/queueifnew', (req, res) => {
     if(!authorized(req)) return response(res, HttpStatus.FORBIDDEN, 'Unauthorized');
 
     let data = req.body;
@@ -134,27 +134,28 @@ router.put('/video/add', (req, res) => {
             redditPostId: data.redditPostId
         },
         limit: 1
-    }).then(vid => {
-        if(vid) return response(res, HttpStatus.CONFLICT, 'Video already exists', {
-            redditPostId: data.redditPostId,
-            videoUrl: data.videoUrl
-        });
+    })
+        .then(vid => {
+            if(vid) return response(res, HttpStatus.CONFLICT, 'Video already exists', {
+                redditPostId: data.redditPostId,
+                videoUrl: data.videoUrl
+            });
 
-        let newVid = Video.create({
-            redditPostId: data.redditPostId,
-            videoUrl: data.videoUrl,
-            status: Status.NewRequest
-        }).then(newVid => {
-            return response(res, HttpStatus.CREATED, 'Created video request', {
-                id: newVid.id,
-                redditPostId: newVid.redditPostId,
-                videoUrl: newVid.videoUrl,
-                status: newVid.status,
-                views: newVid.views,
-                lastView: newVid.lastView
+            let newVid = Video.create({
+                redditPostId: data.redditPostId,
+                videoUrl: data.videoUrl,
+                status: Status.NewRequest
+            }).then(newVid => {
+                return response(res, HttpStatus.CREATED, 'Created video request', {
+                    id: newVid.id,
+                    redditPostId: newVid.redditPostId,
+                    videoUrl: newVid.videoUrl,
+                    status: newVid.status,
+                    views: newVid.views,
+                    lastView: newVid.lastView
+                });
             });
         });
-    });
 });
 
 router.post('/video/update', (req, res) => {
