@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 
 import { APIController, PublicController } from './controllers';
 
-import configurator from './configurator';
+import configurator from 'a-mirror-util/lib/configurator';
 import { Database } from './db/database';
 
 import os from 'os';

@@ -20,6 +20,7 @@
    },
    "homepage": "https://github.com/a-banana/a-mirror-web#readme",
    "dependencies": {
+      "a-mirror-util": "git+https://github.com/kyleratti/a-mirror-util.git",
       "body-parser": "^1.18.3",
       "dotenv": "^6.0.0",
       "express": "^4.16.3",
