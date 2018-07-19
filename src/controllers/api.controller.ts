@@ -124,7 +124,7 @@ router.get('/video/getmirrored', (req, res) => {
     })
 });
 
-router.put('/video/queueifnew', (req, res) => {
+router.put('/video/queue', (req, res) => {
     if(!authorized(req)) return response(res, HttpStatus.FORBIDDEN, 'Unauthorized');
 
     let data = req.body;
