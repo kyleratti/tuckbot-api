@@ -5,7 +5,7 @@ import { Op } from 'sequelize';
 import path from 'path';
 import fs from 'fs';
 
-import configurator from 'a-mirror-util/lib/configurator';
+import { configurator } from 'a-mirror-util/lib/';
 import { response } from "../server";
 import { Video, Status } from '../models/video';
 
