@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import HttpStatus from 'http-status-codes';
 
-import {Op} from 'sequelize';
+import { Op } from 'sequelize';
 import path from 'path';
 import fs from 'fs';
 
