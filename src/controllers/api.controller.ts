@@ -192,7 +192,7 @@ router.post('/video/update', (req, res) => {
 router.put('/video/upload', (req, res) => {
     if(!authorized(req)) return response(res, HttpStatus.UNAUTHORIZED, 'Unauthorized');
 
-    if(!req.files) return response(res, HttpStatus.UNPROCESSABLE_ENTITY, 'No file was attached');
+    if(!req.files || !req.files.video) return response(res, HttpStatus.UNPROCESSABLE_ENTITY, 'No file was attached');
     if(!req.body.redditPostId) return response(res, HttpStatus.UNPROCESSABLE_ENTITY, 'No reddit post id specified');
 
     let redditPostId = req.body.redditPostId;
