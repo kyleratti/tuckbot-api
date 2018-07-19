@@ -9,7 +9,7 @@ import { configurator } from 'a-mirror-util/lib/';
 import { response } from "../server";
 import { Video, Status } from '../models/video';
 
-const appToken = configurator.auth.token;
+const appToken:string = configurator.auth.token;
 
 const router: Router = Router();
 
@@ -17,7 +17,7 @@ const router: Router = Router();
  * Checks if the specified request is authorized
  * @param req The request to evaluate
  */
-function authorized(req) {
+function authorized(req):boolean {
     if(req.method === 'GET')
         return req.headers.token === appToken;
 
