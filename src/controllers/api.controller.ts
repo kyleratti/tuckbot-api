@@ -185,7 +185,7 @@ router.post('/video/update', (req, res) => {
     return response(res, HttpStatus.OK, 'Updated record successfully');
 });
 
-router.put('/video/upload', (req, res) => {
+router.post('/video/upload', (req, res) => {
     if(!authorized(req)) return response(res, HttpStatus.UNAUTHORIZED, 'Unauthorized');
 
     if(!req.files || !req.files.video) return response(res, HttpStatus.UNPROCESSABLE_ENTITY, 'No file was attached');
