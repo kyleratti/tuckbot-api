@@ -202,16 +202,16 @@ router.post('/video/upload', (req, res) => {
         if (!fs.existsSync(storeFolder))
             fs.mkdirSync(storeFolder);
 
-        videoFile.mv(storePath, (err) => {
-            if(err) {
+        videoFile.mv(storePath)
+            .then(() => {
+                console.log(`i got you fucker`);
+                Video.update({ status: Status.LocallyMirrored }, { where: { redditPostId: redditPostId } });
+                return response(res, HttpStatus.OK, 'File uploaded successfully');
+            })
+            .catch((err) => {
                 console.log(`failed: ${err}`);
                 return response(res, HttpStatus.INTERNAL_SERVER_ERROR, 'Error processing upload: ' + err);
-            }
-
-            Video.update({ status: Status.LocallyMirrored }, { where: { redditPostId: redditPostId } });
-
-            return response(res, HttpStatus.OK, 'File uploaded successfully');
-        });
+            });
     } else {
         return response(res, HttpStatus.INTERNAL_SERVER_ERROR, 'File not not picked up by processor; request discarded');
     }
