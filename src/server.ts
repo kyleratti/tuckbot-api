@@ -27,7 +27,7 @@ export enum UrlType {
  * @param args The strings to combine
  */
 export function makeUrl(urlType: UrlType, ...args: string[]) {
-    return (configurator.app.environment === 'local' ? 'https' : 'http') + '://' + urlType + configurator.app.baseDomain + args.join('');
+    return (configurator.app.environment === 'production' ? 'https' : 'http') + '://' + urlType + configurator.app.baseDomain + args.join('');
 }
 
 export class WebServer {
