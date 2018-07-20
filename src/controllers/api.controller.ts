@@ -180,13 +180,9 @@ router.post('/video/update', (req, res) => {
             where: {
                 redditPostId: data.redditPostId
             }
-        })
-        .then(rowsUpdated => {
-            return response(res, HttpStatus.OK, 'Updated record successfully');
-        })
-        .catch(err => {
-            return response(res, HttpStatus.INTERNAL_SERVER_ERROR, err);
         });
+
+    return response(res, HttpStatus.OK, 'Updated record successfully');
 });
 
 router.put('/video/upload', (req, res) => {
