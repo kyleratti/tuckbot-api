@@ -38,10 +38,6 @@ export class WebServer {
         let app = express();
         let port = configurator.app.webPort || 3000;
 
-        app.use(bodyParser.urlencoded({ extended: true }));
-        app.use(bodyParser.json());
-        app.use(fileUpload());
-
         app.set('view engine', 'pug');
 
         app.use('/', PublicController);
@@ -92,9 +88,9 @@ export class ApiServer {
 
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());
-        app.use(fileUpload({
+        app.use('/video/upload', fileUpload({
             safeFileNames: true,
-            preserveExtension: 3,
+            preserveExtension: 4,
             abortOnLimit: true
         }));
 
