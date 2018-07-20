@@ -1,4 +1,5 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import multer from 'multer';
 import HttpStatus from 'http-status-codes';
 
 import { Op } from 'sequelize';
@@ -9,8 +10,8 @@ import { configurator } from 'a-mirror-util/lib/';
 import { response } from "../server";
 import { Video, Status } from '../models/video';
 
-const appToken:string = configurator.auth.token;
-
+const appToken: string = configurator.auth.token;
+const upload = multer({ dest: configurator.file.local.storageDir });
 const router: Router = Router();
 
 /**
@@ -185,32 +186,23 @@ router.post('/video/update', (req, res) => {
     return response(res, HttpStatus.OK, 'Updated record successfully');
 });
 
-router.post('/video/upload', (req, res) => {
+router.post('/video/upload', upload.single('video'), (req: any, res) => {
     if(!authorized(req)) return response(res, HttpStatus.UNAUTHORIZED, 'Unauthorized');
 
-    if(!req.files || !req.files.video) return response(res, HttpStatus.UNPROCESSABLE_ENTITY, 'No file was attached');
+    if(!req.file) return response(res, HttpStatus.UNPROCESSABLE_ENTITY, 'No file was attached');
     if(!req.body.redditPostId) return response(res, HttpStatus.UNPROCESSABLE_ENTITY, 'No reddit post id specified');
 
     let redditPostId = req.body.redditPostId;
-    let videoFile:any = req.files.video;
-    let fileExt = path.extname(videoFile.name);
+    let videoFile = req.file;
+    let fileExt = path.extname(videoFile.originalname);
 
     if(configurator.file.local.storageDir) {
-        let storeFolder = configurator.file.local.storageDir;
-        let storePath = path.resolve(storeFolder, redditPostId + fileExt);
-
-        if (!fs.existsSync(storeFolder))
-            fs.mkdirSync(storeFolder);
-
-        videoFile.mv(storePath)
+        Video.update({ status: Status.LocallyMirrored }, { where: { redditPostId: redditPostId } })
             .then(() => {
-                console.log(`i got you fucker`);
-                Video.update({ status: Status.LocallyMirrored }, { where: { redditPostId: redditPostId } });
                 return response(res, HttpStatus.OK, 'File uploaded successfully');
             })
             .catch((err) => {
-                console.log(`failed: ${err}`);
-                return response(res, HttpStatus.INTERNAL_SERVER_ERROR, 'Error processing upload: ' + err);
+                return response(res, HttpStatus.INTERNAL_SERVER_ERROR, `Error processing upload: ${err}`);
             });
     } else {
         return response(res, HttpStatus.INTERNAL_SERVER_ERROR, 'File not not picked up by processor; request discarded');

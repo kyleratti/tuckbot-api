@@ -1,5 +1,4 @@
 import express from 'express';
-import fileUpload from 'express-fileupload';
 import bodyParser from 'body-parser';
 
 import { APIController, PublicController } from './controllers';
@@ -86,11 +85,6 @@ export class ApiServer {
         let app = express();
         let port = configurator.app.apiPort || 3002;
 
-        app.use('/video/upload', fileUpload({
-            safeFileNames: true,
-            preserveExtension: 4,
-            abortOnLimit: true
-        }));
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());
 
