@@ -17,7 +17,7 @@ const router: Router = Router();
  * Checks if the specified request is authorized
  * @param req The request to evaluate
  */
-function authorized(req):boolean {
+function authorized(req): boolean {
     if(req.method === 'GET')
         return req.headers.token === appToken;
 
@@ -186,7 +186,7 @@ router.post('/video/update', (req, res) => {
         })
         .catch(err => {
             return response(res, HttpStatus.INTERNAL_SERVER_ERROR, err);
-        })
+        });
 });
 
 router.put('/video/upload', (req, res) => {
@@ -211,6 +211,8 @@ router.put('/video/upload', (req, res) => {
                 console.log(`failed: ${err}`);
                 return response(res, HttpStatus.INTERNAL_SERVER_ERROR, 'Error processing upload: ' + err);
             }
+
+            Video.update({ status: Status.LocallyMirrored }, { where: { redditPostId: redditPostId } });
 
             return response(res, HttpStatus.OK, 'File uploaded successfully');
         });
