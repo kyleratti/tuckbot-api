@@ -11,7 +11,15 @@ import { response } from "../server";
 import { Video, Status } from '../models/video';
 
 const appToken: string = configurator.auth.token;
-const upload = multer({ dest: configurator.file.local.storageDir });
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, configurator.file.local.storageDir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+});
+const upload = multer({ storage: storage });
 const router: Router = Router();
 
 /**
