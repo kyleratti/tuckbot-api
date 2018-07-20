@@ -86,13 +86,13 @@ export class ApiServer {
         let app = express();
         let port = configurator.app.apiPort || 3002;
 
-        app.use(bodyParser.urlencoded({ extended: true }));
-        app.use(bodyParser.json());
         app.use('/video/upload', fileUpload({
             safeFileNames: true,
             preserveExtension: 4,
             abortOnLimit: true
         }));
+        app.use(bodyParser.urlencoded({ extended: true }));
+        app.use(bodyParser.json());
 
         app.use('/', APIController);
 
