@@ -12,21 +12,21 @@ import path from 'path';
 // load database
 export var database = new Database(configurator.database.location);
 
-export enum UrlType {
+export var UrlType = {
     /** api requests */
-    Api = 'api.',
+    Api: configurator.app.apiUrl,
     /** cdn requests */
-    Cdn = 'cdn.',
+    Cdn: configurator.app.cdnUrl,
     /** web requests */
-    Web = ''
+    Web: configurator.app.webUrl
 }
 
 /**
  * Combines the strings to the base url
  * @param args The strings to combine
  */
-export function makeUrl(urlType: UrlType, ...args: string[]) {
-    return (configurator.app.environment === 'production' ? 'https' : 'http') + '://' + urlType + configurator.app.baseDomain + args.join('');
+export function makeUrl(baseUrl: string, ...args: string[]) {
+    return baseUrl + args.join('');
 }
 
 export class WebServer {
