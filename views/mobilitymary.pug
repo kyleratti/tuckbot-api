@@ -1,0 +1,6 @@
+extends layout
+
+block content
+    ul
+        each vid in posts
+            li: a(href='/' + vid.redditPostId) #{vid.title}
