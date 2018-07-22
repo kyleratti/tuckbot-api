@@ -1,10 +1,8 @@
-import {Sequelize} from 'sequelize-typescript';
+import { Sequelize } from 'sequelize-typescript';
 
-import {injectable, singleton} from 'microinject';
+import configurator from 'a-mirror-util/lib/configurator';
 import { Video } from '../models/video';
 
-@injectable()
-@singleton()
 export class Database {
     private dbLocation: String;
     public db: Sequelize;
@@ -16,7 +14,7 @@ export class Database {
             username: 'root',
             password: '',
             storage: dbLocation,
-            logging: false
+            logging: configurator.app.environment === 'local'
         });
         db.addModels([Video]);
 
@@ -28,7 +26,16 @@ export class Database {
         this.db
         .authenticate()
         .then(() => {
-            console.log("sqlite database loaded successfully");
+            this.db.query(`PRAGMA TABLE_INFO(Video)`)
+                .then((data) => {
+                    if(!data.filename)
+                        this.db.query(`ALTER TABLE Video ADD filename VARCHAR(255) DEFAULT NULL`);
+                    
+                    console.log("sqlite database loaded successfully");
+                })
+                .catch((err) => {
+                    throw new Error(`failed loading modified database: ${err}`);
+                });
         })
         .catch(err => {
             throw new Error("unable to load database: " + err);

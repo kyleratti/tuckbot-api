@@ -1,0 +1,6 @@
+{
+    "default": {
+        "driver": "sqlite3",
+        "filename": {"ENV": "DATABASE_LOCATION"}
+    }
+}

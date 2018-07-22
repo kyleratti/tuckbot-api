@@ -4,7 +4,6 @@ import HttpStatus from 'http-status-codes';
 
 import { Op } from 'sequelize';
 import path from 'path';
-import fs from 'fs';
 
 import { configurator } from 'a-mirror-util/lib/';
 import { response } from "../server";
@@ -177,6 +176,9 @@ router.post('/video/update', (req, res) => {
     if(data.status)
         updatedData['status'] = data.status;
 
+    if(data.filename)
+        updatedData['filename'] = data.filename;
+
     if(data.views)
         updatedData['views'] = data.views;
 
@@ -189,9 +191,13 @@ router.post('/video/update', (req, res) => {
             where: {
                 redditPostId: data.redditPostId
             }
+        })
+        .then(() => {
+            return response(res, HttpStatus.OK, 'Updated record successfully');
+        })
+        .catch((err) => {
+            return response(res, HttpStatus.INTERNAL_SERVER_ERROR, `Unable to update record: ${err}`);
         });
-
-    return response(res, HttpStatus.OK, 'Updated record successfully');
 });
 
 router.post('/video/upload', upload.single('video'), (req: any, res) => {
@@ -205,7 +211,7 @@ router.post('/video/upload', upload.single('video'), (req: any, res) => {
     let fileExt = path.extname(videoFile.originalname);
 
     if(configurator.file.local.storageDir) {
-        Video.update({ status: Status.LocallyMirrored }, { where: { redditPostId: redditPostId } })
+        Video.update({ status: Status.LocallyMirrored, filename: videoFile.originalname }, { where: { redditPostId: redditPostId } })
             .then(() => {
                 return response(res, HttpStatus.OK, 'File uploaded successfully');
             })

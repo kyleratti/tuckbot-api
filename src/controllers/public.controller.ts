@@ -28,11 +28,12 @@ router.get('/:redditPostId', (req: Request, res: Response) => {
         limit: 1
     }).then(vid => {
         if(vid) {
+            console.log(vid);
             return res.status(HttpStatus.OK).render('show', {
                 title: 'a-mirror',
                 stylesheet: makeUrl(UrlType.Cdn, '/css/style.css'),
                 redditPostId: vid.redditPostId,
-                videoLocation: makeUrl(UrlType.Cdn, '/video/', vid.redditPostId, '.mp4'),
+                videoLocation: makeUrl(UrlType.Cdn, '/video/', (vid.filename ? vid.filename : vid.redditPostId + '.mp4')),
                 posterLocation: makeUrl(UrlType.Cdn, '/img/poster.png'),
 
                 serverName: os.hostname().split('.')[0],

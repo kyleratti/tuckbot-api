@@ -32,6 +32,11 @@ export class Video extends Model<Video> {
 
     @Column({
         allowNull: true,
+    })
+    filename: string;
+
+    @Column({
+        allowNull: true,
         defaultValue: -1
     })
     status: number;
