@@ -193,7 +193,7 @@ router.post('/video/update', (req, res) => {
             }
         })
         .then(() => {
-            return response(res, HttpStatus.OK, 'Updated record successfully');
+            return response(res, HttpStatus.OK, 'Record updated successfully');
         })
         .catch((err) => {
             return response(res, HttpStatus.INTERNAL_SERVER_ERROR, `Unable to update record: ${err}`);
