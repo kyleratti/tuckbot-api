@@ -3,6 +3,9 @@ extends layout
 block content
     .video
         video(controls, poster=posterLocation, src=videoLocation)
-    .reddit
+    .post-link
         | take me 
         a(href="https://reddit.com/" + redditPostId) back to reddit
+    .post-link
+        | take me
+        a(href="/mobilitymary") back to mobility mary's magnificent mirrors
