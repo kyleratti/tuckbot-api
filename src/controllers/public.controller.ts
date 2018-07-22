@@ -28,7 +28,6 @@ router.get('/:redditPostId', (req: Request, res: Response) => {
         limit: 1
     }).then(vid => {
         if(vid) {
-            console.log(vid);
             return res.status(HttpStatus.OK).render('show', {
                 title: 'a-mirror',
                 stylesheet: makeUrl(UrlType.Cdn, '/css/style.css'),
