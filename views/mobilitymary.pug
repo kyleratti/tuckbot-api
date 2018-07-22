@@ -1,6 +1,8 @@
 extends layout
 
 block content
+    h1 Mobility Mary's Magnificent Mirrors
+    small THAT IS ILLEGAL!
     ul
         each vid in posts
             li: a(href='/' + vid.redditPostId) #{vid.title}
