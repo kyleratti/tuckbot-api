@@ -5,4 +5,6 @@ block content
     small THAT IS ILLEGAL!
     ul
         each vid in posts
-            li: a(href='/' + vid.redditPostId) #{vid.title}
+            li #[a(href='/' + vid.redditPostId) #{vid.title}] 
+                small also available on 
+                    a(href='https://mirrorbot.ga/' + vid.redditPostId + '/') mirrorbot.ga
