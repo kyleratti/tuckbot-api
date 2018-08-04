@@ -30,6 +30,8 @@ export class Database {
                 .then((data) => {
                     if(!data.filename)
                         this.db.query(`ALTER TABLE Video ADD filename VARCHAR(255) DEFAULT NULL`);
+
+                    this.db.query(`DELETE FROM Video WHERE redditPostId IS NULL`);
                     
                     console.log("sqlite database loaded successfully");
                 })
