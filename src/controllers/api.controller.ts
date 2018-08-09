@@ -54,6 +54,24 @@ router.get('/debug/video/getall', (req, res) => {
         });
 });
 
+router.post('/debug/video/resetdownloading', (req, res) => {
+    if(!authorized(req)) return response(res, HttpStatus.FORBIDDEN, 'Unauthorized');
+
+    Video.update({
+        status: Status.NewRequest
+    }, {
+        where: {
+            status: Status.Downloading
+        }
+    })
+        .then(() => {
+            return response(res, HttpStatus.OK, 'OK');
+        })
+        .catch(err => {
+            return response(res, HttpStatus.INTERNAL_SERVER_ERROR, err);
+        });
+})
+
 router.get('/video/getinfo/:redditPostId', (req, res) => {
     let redditPostId = req.params.redditPostId;
 
