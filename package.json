@@ -1,5 +1,5 @@
 {
-  "name": "a-mirror-web",
+  "name": "tuckbot-api",
   "version": "1.0.0",
   "description": "The web mirror bot for reddit",
   "main": "lib/index.js",
@@ -11,16 +11,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/a-banana/a-mirror-web.git"
+    "url": "git+https://github.com/a-banana/tuckbot-api.git"
   },
   "author": "a.banana",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/a-banana/a-mirror-web/issues"
+    "url": "https://github.com/a-banana/tuckbot-api/issues"
   },
-  "homepage": "https://github.com/a-banana/a-mirror-web#readme",
+  "homepage": "https://github.com/a-banana/tuckbot-api#readme",
   "dependencies": {
-    "a-mirror-util": "git+https://github.com/kyleratti/a-mirror-util.git",
+    "tuckbot-util": "git+https://github.com/kyleratti/tuckbot-util.git",
     "body-parser": "^1.19.0",
     "dotenv": "^6.2.0",
     "express": "^4.17.1",
