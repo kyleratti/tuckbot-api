@@ -1,104 +1,112 @@
-import express from 'express';
-import bodyParser from 'body-parser';
+import configurator from "a-mirror-util/lib/configurator";
+import bodyParser from "body-parser";
+import express from "express";
+import os from "os";
+import path from "path";
+import { ApiController, PublicController } from "./controllers";
+import { Database } from "./db/database";
 
-import { APIController, PublicController } from './controllers';
-
-import configurator from 'a-mirror-util/lib/configurator';
-import { Database } from './db/database';
-
-import os from 'os';
-import path from 'path';
-
-// load database
 export var database = new Database(configurator.database.location);
 
 export var UrlType = {
-    /** api requests */
-    Api: configurator.app.apiUrl,
-    /** cdn requests */
-    Cdn: configurator.app.cdnUrl,
-    /** web requests */
-    Web: configurator.app.webUrl
-}
+  /** api requests */
+  Api: configurator.app.apiUrl,
+  /** cdn requests */
+  Cdn: configurator.app.cdnUrl,
+  /** web requests */
+  Web: configurator.app.webUrl
+};
 
 /**
  * Combines the strings to the base url
  * @param args The strings to combine
  */
 export function makeUrl(baseUrl: string, ...args: string[]) {
-    return baseUrl + args.join('');
+  return baseUrl + args.join("");
 }
 
 export class WebServer {
-    private app: express.Application;
-    private port: number;
-    
-    constructor() {
-        let app = express();
-        let port = configurator.app.webPort || 3000;
+  private app: express.Application;
+  private port: number;
 
-        app.set('view engine', 'pug');
+  constructor() {
+    let app = express();
+    let port = configurator.app.webPort || 3000;
 
-        app.use('/', PublicController);
+    app.set("view engine", "pug");
 
-        this.app = app;
-        this.port = port;
-    }
+    app.use("/", PublicController);
 
-    start() {
-        database.connect();
+    this.app = app;
+    this.port = port;
+  }
 
-        this.app.listen(this.port, () => {
-            console.log(`listening for web requests at http://127.0.0.1:${this.port}`);
-        })
-    }
+  start() {
+    database.connect();
+
+    this.app.listen(this.port, () => {
+      console.log(
+        `listening for web requests at http://127.0.0.1:${this.port}`
+      );
+    });
+  }
 }
 
 export class CdnServer {
-    private app: express.Application;
-    private port: number;
+  private app: express.Application;
+  private port: number;
 
-    constructor() {
-        let app = express();
-        let port = configurator.app.cdnPort || 3001;
+  constructor() {
+    let app = express();
+    let port = configurator.app.cdnPort || 3001;
 
-        this.app = app;
-        this.port = port;
-    }
+    this.app = app;
+    this.port = port;
+  }
 
-    start() {
-        this.app.use('/img', express.static(path.join(__dirname, '/../public/img')));
-        this.app.use('/css', express.static(path.join(__dirname, '/../public/css')));
-        this.app.use('/video', express.static(configurator.file.local.storageDir));
+  start() {
+    this.app.use(
+      "/img",
+      express.static(path.join(__dirname, "/../public/img"))
+    );
+    this.app.use(
+      "/css",
+      express.static(path.join(__dirname, "/../public/css"))
+    );
+    this.app.use("/video", express.static(configurator.file.local.storageDir));
 
-        this.app.listen(this.port, () => {
-            console.log(`listening for cdn requests at http://127.0.0.1:${this.port}`);
-        });
-    }
+    this.app.listen(this.port, () => {
+      console.log(
+        `listening for cdn requests at http://127.0.0.1:${this.port}`
+      );
+    });
+  }
 }
 
 export class ApiServer {
-    private app: express.Application;
-    private port: number;
- 
-    constructor() {
-        let app = express();
-        let port = configurator.app.apiPort || 3002;
+  private app: express.Application;
+  private port: number;
 
-        app.use(bodyParser.urlencoded({ extended: true }));
-        app.use(bodyParser.json());
+  constructor() {
+    let app = express();
+    let port = configurator.app.apiPort || 3002;
 
-        app.use('/', APIController);
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(bodyParser.json());
 
-        this.app = app;
-        this.port = port;
-    }
+    app.use("/", ApiController);
 
-    start() {
-        this.app.listen(this.port, () => {
-            console.log(`listening for api requests at http://127.0.0.1:${this.port}`);
-        });
-    }
+    this.app = app;
+    this.port = port;
+  }
+
+  start() {
+    this.app.listen(this.port, () => {
+      console.log(
+        `listening for api requests at http://127.0.0.1:${this.port}`
+      );
+    });
+  }
 }
 
 /**
@@ -109,12 +117,12 @@ export class ApiServer {
  * @param data The data to respond to the request with
  */
 export function response(res, status, message, data?) {
-    return res.status(status).send({
-        data: data,
-        status: {
-            code: status,
-            message: message,
-            servedBy: os.hostname().split('.')[0]
-        }
-    });
+  return res.status(status).send({
+    data: data,
+    status: {
+      code: status,
+      message: message,
+      servedBy: os.hostname().split(".")[0]
+    }
+  });
 }
