@@ -12,9 +12,8 @@
     "outDir": "../lib",
     "declaration": true,
     "declarationDir": "../dts",
-    "sourceMap": true,
-    "keyofStringsOnly": true,
-    "skipLibCheck": true
+    "sourceMap": true
   },
-  "exclude": []
+  "exclude": [],
+  "typeRoots": ["types", "node_modules/@types"]
 }
