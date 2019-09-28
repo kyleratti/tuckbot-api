@@ -37,6 +37,11 @@ export class Video extends BaseEntity {
   @Column({
     nullable: false
   })
+  redditPostTitle: string;
+
+  @Column({
+    nullable: false
+  })
   mirrorUrl: string;
 
   @CreateDateColumn()

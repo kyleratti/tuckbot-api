@@ -20,7 +20,6 @@
   },
   "homepage": "https://github.com/a-banana/tuckbot-api#readme",
   "dependencies": {
-    "tuckbot-util": "git+https://github.com/kyleratti/tuckbot-util.git",
     "body-parser": "^1.19.0",
     "dotenv": "^6.2.0",
     "express": "^4.17.1",
@@ -30,6 +29,7 @@
     "os": "^0.1.1",
     "pug": "^2.0.4",
     "sqlite3": "^4.1.0",
+    "tuckbot-util": "git+https://github.com/kyleratti/tuckbot-util.git",
     "typeorm": "^0.2.19"
   },
   "devDependencies": {
