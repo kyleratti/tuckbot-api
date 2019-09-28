@@ -29,6 +29,8 @@ router.get("/:redditPostId", async (req, res) => {
     });
   }
 
+  vid.viewed();
+
   return response(res, {
     status: HttpStatusCode.OK,
     message: "OK",

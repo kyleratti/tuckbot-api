@@ -55,4 +55,9 @@ export class Video extends BaseEntity {
   })
   @Index()
   lastViewedAt: Date;
+
+  viewed() {
+    this.lastViewedAt = new Date();
+    this.save();
+  }
 }
