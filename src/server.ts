@@ -2,6 +2,9 @@ import bodyParser from "body-parser";
 import express from "express";
 import configurator from "tuckbot-util/lib/configurator";
 import { PrivateVideoApi, PublicVideoApi } from "./controllers";
+import { database } from "./db";
+
+let db = database;
 
 export class ApiServer {
   private app: express.Application;
@@ -21,7 +24,13 @@ export class ApiServer {
     this.port = port;
   }
 
-  start() {
+  async start() {
+    try {
+      await db.connect();
+    } catch (err) {
+      console.error(err);
+    }
+
     this.app.listen(this.port, () => {
       console.log(
         `listening for API requests at http://127.0.0.1:${this.port}`
