@@ -2,8 +2,9 @@ FROM node:10-alpine AS app-build
 RUN apk add --no-cache git
 RUN mkdir -p /app-src
 WORKDIR /app-src
-RUN git clone --depth=1 https://github.com/kyleratti/tuckbot-api.git .
-RUN npm install
+COPY src/ /app-src/src/
+COPY package.json /app-src/
+RUN npm install --no-package-lock
 RUN npm run build
 
 FROM node:10-alpine AS app-runtime
