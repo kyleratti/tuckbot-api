@@ -3,6 +3,7 @@ import express from "express";
 import configurator from "tuckbot-util/lib/configurator";
 import { PrivateVideoApi, PublicVideoApi } from "./controllers";
 import { database } from "./db";
+import cors from "cors";
 
 let db = database;
 
@@ -17,8 +18,10 @@ export class ApiServer {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
 
-    app.use("/public", PublicVideoApi);
-    app.use("/private", PrivateVideoApi);
+    app.use(cors());
+
+    app.use("/public/video", PublicVideoApi);
+    app.use("/private/video", PrivateVideoApi);
 
     this.app = app;
     this.port = port;

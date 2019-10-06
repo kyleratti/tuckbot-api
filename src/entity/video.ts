@@ -51,7 +51,7 @@ export class Video extends BaseEntity {
   updatedAt: Date;
 
   @Column({
-    nullable: false
+    nullable: true
   })
   @Index()
   lastViewedAt: Date;

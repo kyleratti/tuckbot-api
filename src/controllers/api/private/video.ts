@@ -8,9 +8,9 @@ const router: Router = Router();
 router.post("/", async (req, res) => {
   // TODO: AUTHENTICATION
 
-  let redditPostId = req.params.redditPostId;
-  let redditPostTitle = req.params.redditPostTitle;
-  let mirrorUrl = req.params.mirrorUrl;
+  let redditPostId = req.body.redditPostId;
+  let redditPostTitle = req.body.redditPostTitle;
+  let mirrorUrl = req.body.mirrorUrl;
 
   if (!redditPostId || !redditPostTitle || !mirrorUrl) {
     return response(res, {
@@ -43,6 +43,7 @@ router.post("/", async (req, res) => {
     redditPostTitle: redditPostTitle,
     mirrorUrl: mirrorUrl
   });
+  vid.save();
 
   return response(res, {
     status: HttpStatusCode.CREATED,
