@@ -69,3 +69,4 @@ ormconfig.json
 dts/
 /lib/
 /data/
+/test/

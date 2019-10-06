@@ -1,9 +1,12 @@
 import bodyParser from "body-parser";
+import cors from "cors";
+import dotenv from "dotenv";
 import express from "express";
 import configurator from "tuckbot-util/lib/configurator";
 import { PrivateVideoApi, PublicVideoApi } from "./controllers";
 import { database } from "./db";
-import cors from "cors";
+
+dotenv.config();
 
 let db = database;
 
