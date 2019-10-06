@@ -1,10 +1,10 @@
 version: "3"
 
 services:
-  api:
+  web:
     build:
       context: .
-      dockerfile: build/api.Dockerfile
+      dockerfile: build/web.Dockerfile
     environment:
       - "NODE_PATH=/app/node_modules/"
       - "ENVIRONMENT=${ENVIRONMENT}"
