@@ -14,4 +14,6 @@ services:
       - 3002:3002
     restart: always
     volumes:
-      - "/data"
+      - api-data:/data
+volumes:
+  api-data:
