@@ -6,8 +6,6 @@ import configurator from "tuckbot-util/lib/configurator";
 import { PrivateVideoApi, PublicVideoApi } from "./controllers";
 import { database } from "./db";
 
-dotenv.config();
-
 let db = database;
 
 export class ApiServer {
