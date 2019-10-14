@@ -1,4 +1,5 @@
 import { Response } from "express";
+import HttpStatusCode from "http-status-codes";
 import { ResponseData } from "../../structures";
 
 let appToken = "TODO"; // FIXME: read app token from configurator
@@ -21,6 +22,10 @@ export function response(
     status: {
       status: data.status,
       message: data.message
+        ? data.message
+        : data.status === HttpStatusCode.OK
+        ? "OK"
+        : "RESPONSE PARSE ERROR"
     },
     data: data.data
   });
