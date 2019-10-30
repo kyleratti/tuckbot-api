@@ -4,7 +4,7 @@ export interface ResponseData {
   status: number;
 
   /** The message to respond with */
-  message: string;
+  message?: string;
 
   /** The data to respond with, if any */
   data?: object;

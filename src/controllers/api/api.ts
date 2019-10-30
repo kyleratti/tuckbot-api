@@ -1,17 +1,38 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import HttpStatusCode from "http-status-codes";
 import { ResponseData } from "../../structures";
+import { configurator } from "tuckbot-util";
 
-let appToken = "TODO"; // FIXME: read app token from configurator
+const apiToken = configurator.tuckbot.api.token;
 
 /**
  * Checks if the specified request is authorized
  * @param req The request to evaluate
+ * @param res The response
+ * @param success The function called if the request is successfully authorized
  */
-function authorized(req): boolean {
-  if (req.method === "GET") return req.headers.token === appToken;
+export function authorized(req: Request, res: Response, success: Function) {
+  if (!req.headers["x-tuckbot-api-token"]) {
+    req.log.error(`Authentication attempted without authentication tokens`);
 
-  return req.body && req.body.token === appToken;
+    return response(res, {
+      status: HttpStatusCode.UNPROCESSABLE_ENTITY,
+      message: "Auth parameters not provided"
+    });
+  }
+
+  if (req.headers["x-tuckbot-api-token"] != apiToken) {
+    req.log.error(`Authentication failed`);
+
+    return response(res, {
+      status: HttpStatusCode.UNAUTHORIZED,
+      message: "Invalid credentials"
+    });
+  }
+
+  req.log.debug(`Received valid admin authentication`);
+
+  success();
 }
 
 export function response(

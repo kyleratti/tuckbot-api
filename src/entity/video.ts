@@ -56,8 +56,19 @@ export class Video extends BaseEntity {
   @Index()
   lastViewedAt: Date;
 
+  @Column({
+    nullable: true
+  })
+  @Index()
+  lastPrunedAt: Date;
+
   viewed() {
     this.lastViewedAt = new Date();
+    this.save();
+  }
+
+  prune() {
+    this.lastPrunedAt = new Date();
     this.save();
   }
 }
