@@ -13,6 +13,13 @@ router.get("/random", async (req, res) => {
     .where("_ROWID_ >= (abs(random()) % (SELECT max(_ROWID_) FROM video))") // NOTE: this is for SQLite as it does not support RAND() in ORDER BY
     .getOne();
 
+  if (!vid) {
+    return response(res, {
+      status: HttpStatusCode.NOT_FOUND,
+      message: "Unable to find a ranodm video"
+    });
+  }
+
   return response(res, {
     status: HttpStatusCode.OK,
     message: "OK",
