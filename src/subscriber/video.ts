@@ -25,7 +25,7 @@ export class VideoSubscriber implements EntitySubscriberInterface<Video> {
     }
   }
 
-  async afterRemove(event: RemoveEvent<Video>) {
+  async beforeRemove(event: RemoveEvent<Video>) {
     let redditPostId = event.entity.redditPostId;
     let mirrorUrl = event.entity.mirrorUrl;
 
@@ -37,7 +37,7 @@ export class VideoSubscriber implements EntitySubscriberInterface<Video> {
         redditPostId: redditPostId,
         mirrorUrl: event.entity.mirrorUrl
       });
-      logger.info(`Successfully deleted '${mirrorUrl} from ACM`);
+      logger.info(`Successfully deleted '${mirrorUrl}' from ACM`);
     } catch (e) {
       logger.fatal(e);
     }
