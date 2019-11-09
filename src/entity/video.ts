@@ -64,11 +64,11 @@ export class Video extends BaseEntity {
 
   viewed() {
     this.lastViewedAt = new Date();
-    this.save();
+    return this.save();
   }
 
   prune() {
     this.lastPrunedAt = new Date();
-    this.save();
+    return this.save();
   }
 }

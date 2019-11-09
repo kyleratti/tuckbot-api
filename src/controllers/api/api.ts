@@ -1,53 +1,36 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import HttpStatusCode from "http-status-codes";
-import { ResponseData } from "../../structures";
-import { configurator } from "tuckbot-util";
-
-const apiToken = configurator.tuckbot.api.token;
-
-/**
- * Checks if the specified request is authorized
- * @param req The request to evaluate
- * @param res The response
- * @param success The function called if the request is successfully authorized
- */
-export function authorized(req: Request, res: Response, success: Function) {
-  if (!req.headers["x-tuckbot-api-token"]) {
-    req.log.error(`Authentication attempted without authentication tokens`);
-
-    return response(res, {
-      status: HttpStatusCode.UNPROCESSABLE_ENTITY,
-      message: "Auth parameters not provided"
-    });
-  }
-
-  if (req.headers["x-tuckbot-api-token"] != apiToken) {
-    req.log.error(`Authentication failed`);
-
-    return response(res, {
-      status: HttpStatusCode.UNAUTHORIZED,
-      message: "Invalid credentials"
-    });
-  }
-
-  req.log.debug(`Received valid admin authentication`);
-
-  success();
-}
+import {
+  DataOnlyResponse,
+  isResponseData,
+  ResponseData
+} from "../../structures";
 
 export function response(
   res: Response,
-  data: ResponseData
+  responseData: ResponseData | DataOnlyResponse
 ): Express.Application {
-  return res.status(data.status).send({
+  if (isResponseData(responseData)) {
+    return res.status(responseData.status).send({
+      status: {
+        status: responseData.status, // TODO: deprecated key, remove later on
+        code: responseData.status,
+        message: responseData.message
+          ? responseData.message
+          : responseData.status === HttpStatusCode.OK
+          ? "OK"
+          : "RESPONSE PARSE ERROR"
+      },
+      data: responseData.data
+    });
+  }
+
+  return res.status(HttpStatusCode.OK).send({
     status: {
-      status: data.status,
-      message: data.message
-        ? data.message
-        : data.status === HttpStatusCode.OK
-        ? "OK"
-        : "RESPONSE PARSE ERROR"
+      status: HttpStatusCode.OK, // TODO: deprecated key, remove later on
+      code: HttpStatusCode.OK,
+      message: "OK"
     },
-    data: data.data
+    data: responseData.data
   });
 }
