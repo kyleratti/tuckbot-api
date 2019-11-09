@@ -68,6 +68,12 @@ router.post("/prune/:redditPostId", async (req, res) => {
       }
     });
   }
+
+  return response(res, {
+    data: {
+      redditPostId: redditPostId
+    }
+  });
 });
 
 router.get("/stalevideos", async (req, res) => {
