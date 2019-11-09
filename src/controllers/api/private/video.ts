@@ -73,13 +73,13 @@ router.get("/stalevideos", async (req, res) => {
     select: ["redditPostId", "lastViewedAt", "lastPrunedAt"],
     where: {
       createdAt: LessThan(new Date().setDate(now.getDay() - 1)),
-      lastPrunedAt: null,
-      limit: 25
+      lastPrunedAt: null
     },
     order: {
       createdAt: "ASC",
       lastPrunedAt: "ASC"
-    }
+    },
+    take: 25
   });
 
   return response(res, {
