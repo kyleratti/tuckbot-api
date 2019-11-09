@@ -1,3 +1,4 @@
+import format from "date-format";
 import { Router } from "express";
 import HttpStatusCode from "http-status-codes";
 import { configurator } from "tuckbot-util";
@@ -8,6 +9,9 @@ import { Video } from "../../../entity";
 const router: Router = Router();
 
 const apiToken = configurator.tuckbot.api.token;
+
+export const LessThanDate = (date: Date) =>
+  LessThan(format(date, "yyyy-mm-dd HH:MM:ss.l"));
 
 router.all("/*", (req, res, next) => {
   if (!req.headers["x-tuckbot-api-token"]) {
@@ -68,11 +72,13 @@ router.post("/prune/:redditPostId", async (req, res) => {
 
 router.get("/stalevideos", async (req, res) => {
   let now = new Date();
+  let minimumAge = new Date();
+  minimumAge.setDate(now.getDay() - 1);
 
   let videos = await Video.find({
     select: ["redditPostId", "lastViewedAt", "lastPrunedAt"],
     where: {
-      createdAt: LessThan(new Date().setDate(now.getDay() - 1)),
+      createdAt: LessThanDate(minimumAge),
       lastPrunedAt: null
     },
     order: {
