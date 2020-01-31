@@ -1,8 +1,8 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class ResetPrunedVideos1580421766 implements MigrationInterface {
+export class ResetPrunedVideos1580437733 implements MigrationInterface {
   async up(queryRunner: QueryRunner): Promise<any> {
-    await queryRunner.query(`UPDATE videos SET lastPrunedAt = null`);
+    await queryRunner.query(`UPDATE video SET lastPrunedAt = null`);
   }
 
   async down(queryRunner: QueryRunner): Promise<any> {
