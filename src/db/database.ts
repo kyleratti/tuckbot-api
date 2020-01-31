@@ -8,6 +8,7 @@ let db = getConnectionManager().create({
   ),
   synchronize: true,
   logging: true,
+  migrationsRun: process.env.NODE_ENV.toLowerCase() === "production",
   entities: [__dirname + "/../entity/**{.ts,.js}"],
   migrations: [__dirname + "/../migration/**{.ts,.js}"]
 });
