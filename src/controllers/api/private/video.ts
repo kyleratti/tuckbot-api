@@ -11,7 +11,7 @@ const router: Router = Router();
 const apiToken = configurator.tuckbot.api.token;
 
 export const LessThanDate = (date: Date) =>
-  LessThan(format(date, "yyyy-mm-dd HH:MM:ss.l"));
+  LessThan(format(date, "YYYY-MM-DD HH:MM:SS"));
 
 router.all("/*", (req, res, next) => {
   if (!req.headers["x-tuckbot-api-token"]) {
