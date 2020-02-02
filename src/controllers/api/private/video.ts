@@ -92,7 +92,7 @@ router.get("/stalevideos", async (req, res) => {
       lastPrunedAt: "ASC"
     },
     skip: 0,
-    take: 25
+    take: 10
   });
 
   return response(res, {
