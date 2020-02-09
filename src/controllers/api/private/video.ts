@@ -97,7 +97,7 @@ router.get("/stalevideos", async (req, res) => {
 
   return response(res, {
     data: {
-      mirroredVideos: videos
+      staleVideos: videos
     }
   });
 });
