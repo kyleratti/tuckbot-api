@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/kyleratti/tuckbot-api#readme",
   "dependencies": {
-    "aws-sdk": "^2.641.0",
+    "aws-sdk": "^2.642.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "date-format": "^3.0.0",
@@ -39,7 +39,7 @@
     "@types/express-pino-logger": "^4.0.2",
     "@types/node": "^8.10.59",
     "@types/pino": "^5.17.0",
-    "ts-node": "3.3.0",
+    "ts-node": "^3.3.0",
     "typescript": "^3.8.3"
   }
 }
