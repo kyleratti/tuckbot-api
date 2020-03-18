@@ -2,7 +2,7 @@ import format from "date-format";
 import { Router } from "express";
 import HttpStatusCode from "http-status-codes";
 import { configurator } from "tuckbot-util";
-import { LessThan } from "typeorm";
+import { Any, LessThan } from "typeorm";
 import { response } from "../";
 import { Video } from "../../../entity";
 
@@ -77,15 +77,18 @@ router.post("/prune/:redditPostId", async (req, res) => {
 });
 
 router.get("/stalevideos", async (req, res) => {
-  let now = new Date();
-  let minimumAge = new Date();
+  const now = new Date();
+  const minimumAge = new Date();
   minimumAge.setDate(now.getDay() - 1);
+
+  const repruneAge = new Date();
+  repruneAge.setDate(now.getDay() - 30);
 
   let videos = await Video.find({
     select: ["redditPostId", "lastViewedAt", "lastPrunedAt"],
     where: {
       createdAt: LessThanDate(minimumAge),
-      lastPrunedAt: null
+      lastPrunedAt: Any([null, LessThanDate(repruneAge)])
     },
     order: {
       createdAt: "ASC",
