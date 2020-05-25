@@ -2,7 +2,7 @@ import {
   EntitySubscriberInterface,
   EventSubscriber,
   InsertEvent,
-  RemoveEvent
+  RemoveEvent,
 } from "typeorm";
 import { Video } from "../entity";
 import { ACMApi, S3Endpoint } from "../services";
@@ -18,7 +18,7 @@ export class VideoSubscriber implements EntitySubscriberInterface<Video> {
     try {
       await ACMApi.update({
         redditPostId: event.entity.redditPostId,
-        url: event.entity.mirrorUrl
+        url: event.entity.mirrorUrl,
       });
     } catch (e) {
       logger.fatal(e);
@@ -35,7 +35,7 @@ export class VideoSubscriber implements EntitySubscriberInterface<Video> {
 
       await ACMApi.remove({
         redditPostId: redditPostId,
-        mirrorUrl: event.entity.mirrorUrl
+        url: event.entity.mirrorUrl,
       });
       logger.info(`Successfully deleted '${mirrorUrl}' from ACM`);
     } catch (e) {
