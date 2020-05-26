@@ -30,7 +30,7 @@ export class VideoSubscriber implements EntitySubscriberInterface<Video> {
     let mirrorUrl = event.entity.mirrorUrl;
 
     try {
-      await S3Endpoint.delete(redditPostId + ".mp4"); // TODO: find a way to handle file extensions properly
+      S3Endpoint.delete(redditPostId + ".mp4"); // TODO: find a way to handle file extensions properly
       logger.info(`Successfully deleted '${redditPostId}.mp4' from S3 storage`);
 
       await ACMApi.remove({
