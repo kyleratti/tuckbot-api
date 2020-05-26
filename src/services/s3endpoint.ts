@@ -17,36 +17,30 @@ export class S3Endpoint {
     });
   }
 
-  private static getFromOffset = (startAfter?: string) => {
-    return s3.listObjectsV2({
-      Bucket: configurator.storage.s3.bucket,
-      StartAfter: startAfter,
-    });
-  };
-
   static getAll = async () => {
-    return new Promise<S3Object[]>((resolve, fail) => {
-      const keys = new Array<S3Object>();
+    return new Promise<S3Object[]>((success, fail) => {
+      const objects = new Array<S3Object>();
 
-      s3.listObjectsV2({
-        Bucket: configurator.storage.s3.bucket,
-      }).eachPage((err, data) => {
-        if (err) {
-          fail(err);
-          return;
-        }
+      const listAll = async (nextToken?: string) => {
+        let opts: aws.S3.ListObjectsV2Request = {
+          Bucket: configurator.storage.s3.bucket,
+        };
+        if (nextToken) opts.ContinuationToken = nextToken;
 
-        if (data === null) {
-          resolve(keys);
-          return;
-        }
+        s3.listObjectsV2(opts, (err, data) => {
+          if (err) {
+            return fail(err);
+          }
 
-        data.Contents.forEach((obj) => {
-          keys.push(new S3Object(obj));
+          if (data === null) {
+            return success(objects);
+          }
+
+          data.Contents.map((obj) => objects.push(new S3Object(obj)));
+
+          if (data.IsTruncated) listAll(data.NextContinuationToken);
         });
-
-        return true;
-      });
+      };
     });
   };
 }
