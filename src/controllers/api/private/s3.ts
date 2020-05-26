@@ -1,18 +1,12 @@
-import format from "date-format";
 import { Router } from "express";
 import HttpStatusCode from "http-status-codes";
 import { configurator } from "tuckbot-util";
-import { LessThan } from "typeorm";
 import { response } from "../";
-import { Video } from "../../../entity";
 import { S3Endpoint } from "../../../services";
 
 const router = Router();
 
 const apiToken = configurator.tuckbot.api.token;
-
-export const LessThanDate = (date: Date) =>
-  LessThan(format(date, "YYYY-MM-DD HH:MM:SS"));
 
 router.all("/*", (req, res, next) => {
   if (!req.headers["x-tuckbot-api-token"]) {
