@@ -32,13 +32,10 @@ export class S3Endpoint {
             return fail(err);
           }
 
-          if (data === null) {
-            return success(objects);
-          }
-
           data.Contents.map((obj) => objects.push(new S3Object(obj)));
 
           if (data.IsTruncated) listAll(data.NextContinuationToken);
+          else return success(objects);
         });
       };
     });
