@@ -1,18 +1,16 @@
 import bodyParser from "body-parser";
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
-import configurator from "tuckbot-util/lib/configurator";
-import { PrivateVideoApi, PublicVideoApi } from "./controllers";
-import { database } from "./db";
-
 import expressPinoLogger from "express-pino-logger";
 import pino from "pino";
+import configurator from "tuckbot-util/lib/configurator";
+import { PrivateS3Api, PrivateVideoApi, PublicVideoApi } from "./controllers";
+import { database } from "./db";
 
 let db = database;
 export const logger = pino({
   name: "tuckbot-api",
-  level: "debug"
+  level: "debug",
 });
 
 export class ApiServer {
@@ -31,6 +29,8 @@ export class ApiServer {
     app.use(cors());
 
     app.use("/public/video", PublicVideoApi);
+
+    app.use("/private/s3", PrivateS3Api);
     app.use("/private/video", PrivateVideoApi);
 
     this.app = app;
