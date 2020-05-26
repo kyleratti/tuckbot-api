@@ -19,7 +19,7 @@ router.all("/*", (req, res, next) => {
 
     return response(res, {
       status: HttpStatusCode.UNPROCESSABLE_ENTITY,
-      message: "Auth parameters not provided"
+      message: "Auth parameters not provided",
     });
   }
 
@@ -28,7 +28,7 @@ router.all("/*", (req, res, next) => {
 
     return response(res, {
       status: HttpStatusCode.UNAUTHORIZED,
-      message: "Invalid credentials"
+      message: "Invalid credentials",
     });
   }
 
@@ -42,8 +42,8 @@ router.post("/prune/:redditPostId", async (req, res) => {
 
   let video = await Video.findOne({
     where: {
-      redditPostId: redditPostId
-    }
+      redditPostId: redditPostId,
+    },
   });
 
   if (!video) {
@@ -51,8 +51,8 @@ router.post("/prune/:redditPostId", async (req, res) => {
       status: HttpStatusCode.NOT_FOUND,
       message: `Video not found in database`,
       data: {
-        redditPostId: redditPostId
-      }
+        redditPostId: redditPostId,
+      },
     });
   }
 
@@ -64,15 +64,15 @@ router.post("/prune/:redditPostId", async (req, res) => {
       message: `Unable to prune video`,
       data: {
         redditPostId: redditPostId,
-        message: e
-      }
+        message: e,
+      },
     });
   }
 
   return response(res, {
     data: {
-      redditPostId: redditPostId
-    }
+      redditPostId: redditPostId,
+    },
   });
 });
 
@@ -90,21 +90,21 @@ router.get("/stalevideos", async (req, res) => {
       { createdAt: LessThanDate(minimumAge), lastPrunedAt: null },
       {
         createdAt: LessThanDate(minimumAge),
-        lastPrunedAt: LessThanDate(repruneAge)
-      }
+        lastPrunedAt: LessThanDate(repruneAge),
+      },
     ],
     order: {
       createdAt: "ASC",
-      lastPrunedAt: "ASC"
+      lastPrunedAt: "ASC",
     },
     skip: 0,
-    take: 10
+    take: 10,
   });
 
   return response(res, {
     data: {
-      staleVideos: videos
-    }
+      staleVideos: videos,
+    },
   });
 });
 
@@ -120,13 +120,13 @@ router.post("/", async (req, res) => {
       data: {
         redditPostId: redditPostId,
         redditPostTitle: redditPostTitle,
-        mirrorUrl: mirrorUrl
-      }
+        mirrorUrl: mirrorUrl,
+      },
     });
   }
 
   let vid = await Video.findOne({
-    redditPostId: redditPostId
+    redditPostId: redditPostId,
   });
 
   if (vid) {
@@ -134,15 +134,15 @@ router.post("/", async (req, res) => {
       status: HttpStatusCode.SEE_OTHER,
       message: "Reddit post already exists in database",
       data: {
-        redditPostId: redditPostId
-      }
+        redditPostId: redditPostId,
+      },
     });
   }
 
   vid = await Video.create({
     redditPostId: redditPostId,
     redditPostTitle: redditPostTitle,
-    mirrorUrl: mirrorUrl
+    mirrorUrl: mirrorUrl,
   });
   vid.save();
 
@@ -152,8 +152,23 @@ router.post("/", async (req, res) => {
     data: {
       redditPostId: redditPostId,
       redditPostTitle: redditPostTitle,
-      mirrorUrl: mirrorUrl
-    }
+      mirrorUrl: mirrorUrl,
+    },
+  });
+});
+
+router.get("/all", async (req, res) => {
+  const videos = await Video.find({
+    order: {
+      createdAt: "DESC",
+    },
+  });
+
+  return response(res, {
+    data: {
+      count: videos.length,
+      videos: videos,
+    },
   });
 });
 
@@ -163,12 +178,12 @@ router.get("/:redditPostId", async (req, res) => {
   if (!redditPostId) {
     return response(res, {
       status: HttpStatusCode.UNPROCESSABLE_ENTITY,
-      message: "redditPostId not provided"
+      message: "redditPostId not provided",
     });
   }
 
   let vid = await Video.findOne({
-    redditPostId: redditPostId
+    redditPostId: redditPostId,
   });
 
   if (!vid) {
@@ -176,8 +191,8 @@ router.get("/:redditPostId", async (req, res) => {
       status: HttpStatusCode.NOT_FOUND,
       message: "Video not found in database",
       data: {
-        redditPostId: redditPostId
-      }
+        redditPostId: redditPostId,
+      },
     });
   }
 
@@ -185,8 +200,8 @@ router.get("/:redditPostId", async (req, res) => {
     data: {
       redditPostId: vid.redditPostId,
       redditPostTitle: vid.redditPostTitle,
-      mirrorUrl: vid.mirrorUrl
-    }
+      mirrorUrl: vid.mirrorUrl,
+    },
   });
 });
 
@@ -196,12 +211,12 @@ router.delete("/:redditPostId", async (req, res) => {
   if (!redditPostId) {
     return response(res, {
       status: HttpStatusCode.UNPROCESSABLE_ENTITY,
-      message: "redditPostId not provided"
+      message: "redditPostId not provided",
     });
   }
 
   let vid = await Video.findOne({
-    redditPostId: redditPostId
+    redditPostId: redditPostId,
   });
 
   if (!vid) {
@@ -209,8 +224,8 @@ router.delete("/:redditPostId", async (req, res) => {
       status: HttpStatusCode.NOT_FOUND,
       message: "Video not found in database",
       data: {
-        redditPostId: redditPostId
-      }
+        redditPostId: redditPostId,
+      },
     });
   }
 
@@ -222,8 +237,8 @@ router.delete("/:redditPostId", async (req, res) => {
       message: "Internal error while processing deletion",
       data: {
         redditPostId: redditPostId,
-        message: e
-      }
+        message: e,
+      },
     });
   }
 
@@ -231,8 +246,8 @@ router.delete("/:redditPostId", async (req, res) => {
     data: {
       redditPostId: vid.redditPostId,
       redditPostTitle: vid.redditPostTitle,
-      mirrorUrl: vid.mirrorUrl
-    }
+      mirrorUrl: vid.mirrorUrl,
+    },
   });
 });
 
