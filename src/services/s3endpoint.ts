@@ -37,6 +37,8 @@ export class S3Endpoint {
           if (data.IsTruncated) listAll(data.NextContinuationToken);
           else return success(objects);
         });
+
+        listAll();
       };
     });
   };
