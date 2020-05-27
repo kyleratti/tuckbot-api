@@ -22,19 +22,19 @@ export class S3Endpoint {
       const objects = new Array<S3Object>();
 
       const listAll = async (nextToken?: string) => {
-        let opts: aws.S3.ListObjectsV2Request = {
+        let opts: aws.S3.ListObjectsRequest = {
           Bucket: configurator.storage.s3.bucket,
         };
-        if (nextToken) opts.ContinuationToken = nextToken;
+        if (nextToken) opts.Marker = nextToken;
 
-        s3.listObjectsV2(opts, (err, data) => {
+        s3.listObjects(opts, (err, data) => {
           if (err) {
             return fail(err);
           }
 
           data.Contents.map((obj) => objects.push(new S3Object(obj)));
 
-          if (data.IsTruncated) listAll(data.NextContinuationToken);
+          if (data.IsTruncated) listAll(data.NextMarker);
           else return success(objects);
         });
       };
