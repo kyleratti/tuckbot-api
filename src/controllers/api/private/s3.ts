@@ -46,44 +46,46 @@ router.get("/all", async (_req, res) => {
 });
 
 router.delete("/prune", async (req, res) => {
-  const objects = await S3Endpoint.getAll();
-  const files = objects.map((obj) => obj.key);
-  const mirrorsQuery = await Video.find({
-    select: ["redditPostId"],
-    order: {
-      createdAt: "ASC",
-    },
-  });
-  const mirrors = mirrorsQuery.map((mirror) => mirror.redditPostId);
+  const files = (await S3Endpoint.getAll()).map((obj) => obj.key);
+  const mirrors = (
+    await Video.find({
+      select: ["redditPostId"],
+      order: {
+        createdAt: "ASC",
+      },
+    })
+  ).map((mirror) => mirror.redditPostId);
 
   const [purgedS3, purgedApi] = [new Array<string>(), new Array<string>()];
 
-  objects.forEach((obj) => {
-    const [key, redditPostId] = [obj.key, obj.key.split(".")[0]];
-    const exists = mirrors.find((mirror) => mirror === redditPostId) !== null;
+  let key: string;
+  let redditPostId: string;
+  let exists = false;
 
+  files.forEach((file) => {
+    redditPostId = file.split(".")[0];
+    exists = mirrors.includes(redditPostId);
     if (!exists) {
       // S3Endpoint.delete(key);
-      req.log.info(
-        `Reddit Post ID '%s' exists in object storage but missing from tuckbot; removing from object storage`,
-        redditPostId
-      );
-
+      // req.log.info(
+      //   `Reddit Post ID '%s' exists in object storage but missing from tuckbot; removing from object storage`,
+      //   redditPostId
+      // );
       purgedS3.push(key);
     }
   });
 
   mirrors.forEach((mirror) => {
-    const key = `${mirror}.mp4`;
-    const exists = files.includes(key);
+    key = `${mirror}.mp4`;
+    exists = files.includes(key);
 
     if (!exists) {
       // mirror.remove();
-      req.log.info(
-        `Reddit Post ID '%s' exists but '%s' missing from object storage; removing`,
-        mirror,
-        key
-      );
+      // req.log.info(
+      //   `Reddit Post ID '%s' exists but '%s' missing from object storage; removing`,
+      //   mirror,
+      //   key
+      // );
 
       purgedApi.push(key);
     }
