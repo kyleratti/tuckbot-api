@@ -5,6 +5,8 @@ import { configurator } from "tuckbot-util";
 import { LessThan } from "typeorm";
 import { response } from "../";
 import { Video } from "../../../entity";
+import { logger } from "../../../server";
+import { ACMApi, S3Endpoint } from "../../../services";
 
 const router: Router = Router();
 
@@ -231,6 +233,12 @@ router.delete("/:redditPostId", async (req, res) => {
 
   try {
     await vid.remove();
+
+    await ACMApi.remove({
+      redditPostId: redditPostId,
+      url: vid.mirrorUrl,
+    });
+    logger.info(`Successfully deleted '${vid.mirrorUrl}' from ACM`);
   } catch (e) {
     return response(res, {
       status: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -240,6 +248,13 @@ router.delete("/:redditPostId", async (req, res) => {
         message: e,
       },
     });
+  }
+
+  try {
+    await S3Endpoint.delete(redditPostId + ".mp4"); // TODO: find a way to handle file extensions properly
+    logger.info(`Successfully deleted '${redditPostId}.mp4' from S3 storage`);
+  } catch (e) {
+    logger.fatal(e);
   }
 
   return response(res, {
