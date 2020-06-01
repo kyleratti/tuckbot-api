@@ -139,12 +139,12 @@ router.post("/", async (req, res) => {
     });
   }
 
-  vid = await Video.create({
+  vid = Video.create({
     redditPostId: redditPostId,
     redditPostTitle: redditPostTitle,
     mirrorUrl: mirrorUrl,
   });
-  vid.save();
+  await vid.save();
 
   return response(res, {
     status: HttpStatusCode.CREATED,
