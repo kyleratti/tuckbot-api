@@ -45,7 +45,7 @@ export class ApiServer {
     }
 
     this.app.listen(this.port, () => {
-      console.log(
+      logger.info(
         `listening for API requests at http://127.0.0.1:${this.port}`
       );
     });
