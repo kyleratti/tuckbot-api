@@ -10,10 +10,19 @@ const s3 = new aws.S3({
 });
 
 export class S3Endpoint {
-  static delete(key: string) {
-    return s3.deleteObject({
-      Bucket: configurator.storage.s3.bucket,
-      Key: key,
+  static async delete(key: string) {
+    return new Promise<string>((success, fail) => {
+      s3.deleteObject(
+        {
+          Bucket: configurator.storage.s3.bucket,
+          Key: key,
+        },
+        (err, _obj) => {
+          if (err) return fail(err);
+
+          return success(key);
+        }
+      );
     });
   }
 
