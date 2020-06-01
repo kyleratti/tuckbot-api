@@ -5,8 +5,8 @@ import {
   RemoveEvent,
 } from "typeorm";
 import { Video } from "../entity";
-import { ACMApi, S3Endpoint } from "../services";
 import { logger } from "../server";
+import { ACMApi, S3Endpoint } from "../services";
 
 @EventSubscriber()
 export class VideoSubscriber implements EntitySubscriberInterface<Video> {
@@ -32,7 +32,11 @@ export class VideoSubscriber implements EntitySubscriberInterface<Video> {
     try {
       await S3Endpoint.delete(redditPostId + ".mp4"); // TODO: find a way to handle file extensions properly
       logger.info(`Successfully deleted '${redditPostId}.mp4' from S3 storage`);
+    } catch (e) {
+      logger.fatal(e);
+    }
 
+    try {
       await ACMApi.remove({
         redditPostId: redditPostId,
         url: event.entity.mirrorUrl,
