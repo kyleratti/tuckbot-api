@@ -233,12 +233,6 @@ router.delete("/:redditPostId", async (req, res) => {
 
   try {
     await vid.remove();
-
-    await ACMApi.remove({
-      redditPostId: redditPostId,
-      url: vid.mirrorUrl,
-    });
-    logger.info(`Successfully deleted '${vid.mirrorUrl}' from ACM`);
   } catch (e) {
     return response(res, {
       status: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -248,6 +242,16 @@ router.delete("/:redditPostId", async (req, res) => {
         message: e,
       },
     });
+  }
+
+  try {
+    await ACMApi.remove({
+      redditPostId: redditPostId,
+      url: vid.mirrorUrl,
+    });
+    logger.info(`Successfully deleted '${vid.mirrorUrl}' from ACM`);
+  } catch (e) {
+    logger.fatal(e);
   }
 
   try {
