@@ -8,7 +8,6 @@ import { S3Endpoint } from "../../../services";
 const router = Router();
 
 const apiToken = configurator.tuckbot.api.token;
-
 router.all("/*", (req, res, next) => {
   if (!req.headers["x-tuckbot-api-token"]) {
     req.log.error(`Authentication attempted without authentication tokens`);
