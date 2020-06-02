@@ -18,7 +18,7 @@ services:
       - "TUCKBOT_API_URL=${TUCKBOT_API_URL}"
       - "ACM_ENDPOINT=${ACM_ENDPOINT}"
       - "ACM_API_TOKEN=${ACM_API_TOKEN}"
-      - "ACM_BOT_TOKEN=${ACM__TBOTOKEN}"
+      - "ACM_BOT_TOKEN=${ACM_BOT_TOKEN}"
     ports:
       - 3002:3002
     restart: always
