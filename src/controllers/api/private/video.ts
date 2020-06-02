@@ -247,7 +247,7 @@ router.delete("/:redditPostId", async (req, res) => {
   try {
     await ACMApi.remove({
       redditPostId: redditPostId,
-      url: vid.mirrorUrl,
+      url: `${configurator.tuckbot.frontend.url}/${redditPostId}`,
     });
     logger.info(`Successfully deleted '${vid.mirrorUrl}' from ACM`);
   } catch (e) {
