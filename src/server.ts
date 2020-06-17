@@ -2,16 +2,11 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
 import expressPinoLogger from "express-pino-logger";
-import pino from "pino";
-import configurator from "tuckbot-util/lib/configurator";
+import { configurator, logger } from "tuckbot-util";
 import { PrivateS3Api, PrivateVideoApi, PublicVideoApi } from "./controllers";
 import { database } from "./db";
 
-let db = database;
-export const logger = pino({
-  name: "tuckbot-api",
-  level: "debug",
-});
+logger.info(`Starting up...`);
 
 export class ApiServer {
   private app: express.Application;
@@ -21,7 +16,9 @@ export class ApiServer {
     let app = express();
     let port = configurator.app.apiPort || 3002;
 
-    app.use(expressPinoLogger({ logger: logger, level: "debug" }));
+    app.use(
+      expressPinoLogger({ logger: logger, level: configurator.logger.level })
+    );
 
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
@@ -39,15 +36,24 @@ export class ApiServer {
 
   async start() {
     try {
-      await db.connect();
+      await database.connect();
+      logger.info(`Connected to database`);
     } catch (err) {
-      console.error(err);
+      logger.fatal({
+        msg: `Unable to connect to database`,
+        error: err,
+      });
     }
 
     this.app.listen(this.port, () => {
-      logger.info(
-        `listening for API requests at http://127.0.0.1:${this.port}`
-      );
+      logger.info({
+        msg: `Server started`,
+        serverConfig: {
+          address: `127.0.0.1`,
+          protocol: `HTTP`,
+          port: this.port,
+        },
+      });
     });
   }
 }
