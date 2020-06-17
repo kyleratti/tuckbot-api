@@ -5,12 +5,9 @@ import { configurator } from "tuckbot-util";
 import { LessThan } from "typeorm";
 import { response } from "../";
 import { Video } from "../../../entity";
-import { logger } from "../../../server";
 import { ACMApi, S3Endpoint } from "../../../services";
 
-const router: Router = Router();
-
-const apiToken = configurator.tuckbot.api.token;
+const router = Router();
 
 export const LessThanDate = (date: Date) =>
   LessThan(format(date, "YYYY-MM-DD HH:MM:SS"));
@@ -25,7 +22,7 @@ router.all("/*", (req, res, next) => {
     });
   }
 
-  if (req.headers["x-tuckbot-api-token"] != apiToken) {
+  if (req.headers["x-tuckbot-api-token"] != configurator.tuckbot.api.token) {
     req.log.error(`Authentication failed`);
 
     return response(res, {
@@ -40,15 +37,20 @@ router.all("/*", (req, res, next) => {
 });
 
 router.post("/prune/:redditPostId", async (req, res) => {
-  let redditPostId = req.params.redditPostId;
+  const redditPostId = req.params.redditPostId;
 
-  let video = await Video.findOne({
+  const video = await Video.findOne({
     where: {
       redditPostId: redditPostId,
     },
   });
 
   if (!video) {
+    req.log.debug({
+      msg: `Unable to prune video: video not in database`,
+      redditPostId: redditPostId,
+    });
+
     return response(res, {
       status: HttpStatusCode.NOT_FOUND,
       message: `Video not found in database`,
@@ -60,13 +62,25 @@ router.post("/prune/:redditPostId", async (req, res) => {
 
   try {
     await video.prune();
-  } catch (e) {
+
+    req.log.debug({
+      msg: `Pruned video`,
+      redditPostId: redditPostId,
+      video: video.toLoggable(),
+    });
+  } catch (err) {
+    req.log.error({
+      msg: `Unable to prune video`,
+      redditPostId: redditPostId,
+      error: err,
+    });
+
     return response(res, {
       status: HttpStatusCode.INTERNAL_SERVER_ERROR,
       message: `Unable to prune video`,
       data: {
         redditPostId: redditPostId,
-        message: e,
+        message: err,
       },
     });
   }
@@ -86,7 +100,13 @@ router.get("/stalevideos", async (req, res) => {
   const repruneAge = new Date();
   repruneAge.setDate(now.getDay() - 30);
 
-  let videos = await Video.find({
+  req.log.debug({
+    msg: `Retrieving stale videos`,
+    minimumAge: minimumAge.toDateString(),
+    repruneAge: repruneAge.toDateString(),
+  });
+
+  const videos = await Video.find({
     select: ["redditPostId", "lastViewedAt", "lastPrunedAt"],
     where: [
       { createdAt: LessThanDate(minimumAge), lastPrunedAt: null },
@@ -103,6 +123,11 @@ router.get("/stalevideos", async (req, res) => {
     take: 10,
   });
 
+  req.log.debug({
+    msg: `Retrieved stale videos`,
+    staleVideos: videos,
+  });
+
   return response(res, {
     data: {
       staleVideos: videos,
@@ -111,11 +136,22 @@ router.get("/stalevideos", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  let redditPostId = req.body.redditPostId;
-  let redditPostTitle = req.body.redditPostTitle;
-  let mirrorUrl = req.body.mirrorUrl;
+  const [redditPostId, redditPostTitle, mirrorUrl] = [
+    req.body.redditPostId,
+    req.body.redditPostTitle,
+    req.body.mirrorUrl,
+  ];
 
   if (!redditPostId || !redditPostTitle || !mirrorUrl) {
+    req.log.error({
+      msg: `Unable to update video: missing data in request`,
+      updateRequestData: {
+        redditPostId: redditPostId,
+        redditPostTitle: redditPostTitle,
+        mirrorUrl: mirrorUrl,
+      },
+    });
+
     return response(res, {
       status: HttpStatusCode.UNPROCESSABLE_ENTITY,
       message: "Data missing from request",
@@ -132,6 +168,11 @@ router.post("/", async (req, res) => {
   });
 
   if (vid) {
+    req.log.info({
+      msg: `Unable to create video: already exists in database`,
+      redditPostId: redditPostId,
+    });
+
     return response(res, {
       status: HttpStatusCode.SEE_OTHER,
       message: "Reddit post already exists in database",
@@ -147,6 +188,11 @@ router.post("/", async (req, res) => {
     mirrorUrl: mirrorUrl,
   });
   await vid.save();
+
+  req.log.info({
+    msg: `Created video in database`,
+    video: vid.toLoggable(),
+  });
 
   return response(res, {
     status: HttpStatusCode.CREATED,
@@ -166,6 +212,11 @@ router.get("/all", async (req, res) => {
     },
   });
 
+  req.log.debug({
+    msg: `Retrieved all mirrors from database`,
+    videos: videos.map((video) => video.toLoggable()),
+  });
+
   return response(res, {
     data: {
       count: videos.length,
@@ -175,20 +226,34 @@ router.get("/all", async (req, res) => {
 });
 
 router.get("/:redditPostId", async (req, res) => {
-  let redditPostId = req.params.redditPostId;
+  const redditPostId = req.params.redditPostId;
 
   if (!redditPostId) {
+    req.log.error({
+      msg: `Unable to get video: missing data in request`,
+      getRequestData: {
+        redditPostId: redditPostId,
+      },
+    });
+
     return response(res, {
       status: HttpStatusCode.UNPROCESSABLE_ENTITY,
       message: "redditPostId not provided",
     });
   }
 
-  let vid = await Video.findOne({
+  const vid = await Video.findOne({
     redditPostId: redditPostId,
   });
 
   if (!vid) {
+    req.log.debug({
+      msg: `Unable to get video: does not exist`,
+      getRequestData: {
+        redditPostId: redditPostId,
+      },
+    });
+
     return response(res, {
       status: HttpStatusCode.NOT_FOUND,
       message: "Video not found in database",
@@ -197,6 +262,14 @@ router.get("/:redditPostId", async (req, res) => {
       },
     });
   }
+
+  req.log.debug({
+    msg: `Retrieved video`,
+    getRequestData: {
+      redditPostId: redditPostId,
+    },
+    video: vid.toLoggable(),
+  });
 
   return response(res, {
     data: {
@@ -208,20 +281,34 @@ router.get("/:redditPostId", async (req, res) => {
 });
 
 router.delete("/:redditPostId", async (req, res) => {
-  let redditPostId = req.params.redditPostId;
+  const redditPostId = req.params.redditPostId;
 
   if (!redditPostId) {
+    req.log.error({
+      msg: `Unable to delete video: missing data in request`,
+      deleteRequestData: {
+        redditPostId: redditPostId,
+      },
+    });
+
     return response(res, {
       status: HttpStatusCode.UNPROCESSABLE_ENTITY,
       message: "redditPostId not provided",
     });
   }
 
-  let vid = await Video.findOne({
+  const vid = await Video.findOne({
     redditPostId: redditPostId,
   });
 
   if (!vid) {
+    req.log.debug({
+      msg: `Unable to delete video: does not exist`,
+      deleteRequestData: {
+        redditPostId: redditPostId,
+      },
+    });
+
     return response(res, {
       status: HttpStatusCode.NOT_FOUND,
       message: "Video not found in database",
@@ -233,33 +320,72 @@ router.delete("/:redditPostId", async (req, res) => {
 
   try {
     await vid.remove();
-  } catch (e) {
+  } catch (err) {
+    req.log.error({
+      msg: `Unable to delete video: error when removed from database`,
+      error: err,
+    });
+
     return response(res, {
       status: HttpStatusCode.INTERNAL_SERVER_ERROR,
       message: "Internal error while processing deletion",
       data: {
         redditPostId: redditPostId,
-        message: e,
+        message: err,
       },
     });
   }
+
+  req.log.debug({
+    msg: `Deleted video from database`,
+    deleteRequestData: {
+      redditPostId: redditPostId,
+    },
+    video: vid.toLoggable(),
+  });
 
   try {
     await ACMApi.remove({
       redditPostId: redditPostId,
       url: `${configurator.tuckbot.frontend.url}/${redditPostId}`,
     });
-    logger.info(`Successfully deleted '${vid.mirrorUrl}' from ACM`);
-  } catch (e) {
-    logger.fatal(e);
+
+    req.log.info({
+      msg: `Deleted video from a-centralized-mirror API`,
+      deleteRequestData: {
+        redditPostId: redditPostId,
+      },
+    });
+  } catch (err) {
+    req.log.fatal({
+      msg: `Unable to delete video from a-centralized-mirror`,
+      error: err,
+    });
   }
 
   try {
     await S3Endpoint.delete(redditPostId + ".mp4"); // TODO: find a way to handle file extensions properly
-    logger.info(`Successfully deleted '${redditPostId}.mp4' from S3 storage`);
-  } catch (e) {
-    logger.fatal(e);
+
+    req.log.debug({
+      msg: `Deleted video from S3 storage`,
+      deleteRequestData: {
+        redditPostId: redditPostId,
+      },
+    });
+  } catch (err) {
+    req.log.error({
+      msg: `Unable to delete video from S3 storage`,
+      error: err,
+    });
   }
+
+  req.log.debug({
+    msg: `Deleted video`,
+    deleteRequestData: {
+      redditPostId: redditPostId,
+    },
+    video: vid.toLoggable(),
+  });
 
   return response(res, {
     data: {
