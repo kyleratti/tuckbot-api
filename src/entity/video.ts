@@ -5,7 +5,7 @@ import {
   Entity,
   Index,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from "typeorm";
 
 export enum Status {
@@ -20,7 +20,7 @@ export enum Status {
   // Errors
   DownloadingFailed = 100,
   VideoUnavailable = 101,
-  TranscodingFailed = 200
+  TranscodingFailed = 200,
 }
 
 @Entity()
@@ -30,17 +30,17 @@ export class Video extends BaseEntity {
 
   @Column({
     unique: true,
-    nullable: false
+    nullable: false,
   })
   redditPostId: string;
 
   @Column({
-    nullable: false
+    nullable: false,
   })
   redditPostTitle: string;
 
   @Column({
-    nullable: false
+    nullable: false,
   })
   mirrorUrl: string;
 
@@ -51,13 +51,13 @@ export class Video extends BaseEntity {
   updatedAt: Date;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   @Index()
   lastViewedAt: Date;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   @Index()
   lastPrunedAt: Date;
@@ -70,5 +70,16 @@ export class Video extends BaseEntity {
   prune() {
     this.lastPrunedAt = new Date();
     return this.save();
+  }
+
+  toLoggable() {
+    return {
+      id: this.id,
+      redditPostId: this.redditPostId,
+      redditPostTitle: this.redditPostTitle,
+      mirrorUrl: this.mirrorUrl,
+      lastViewedAt: this.lastViewedAt,
+      lastPrunedAt: this.lastPrunedAt,
+    };
   }
 }
