@@ -33,9 +33,14 @@ router.all("/*", (req, res, next) => {
   next();
 });
 
-router.get("/all", async (_req, res) => {
+router.get("/all", async (req, res) => {
   const objects = await S3Endpoint.getAll();
   const files = objects.map((obj) => obj.key);
+
+  req.log.debug({
+    msg: `Retrieved all objects in S3 storage`,
+    s3Objects: files,
+  });
 
   return response(res, {
     data: {
@@ -45,6 +50,12 @@ router.get("/all", async (_req, res) => {
   });
 });
 
+/**
+ * FIXME: this very quickly overwhelms stdout and causes the node
+ * process to hang indefinitely without warning. This needs to be
+ * finished as all it does currently is output a list of files
+ * that need to be purged (without acutally purging them)
+ */
 router.delete("/prune", async (req, res) => {
   const files = (await S3Endpoint.getAll()).map((obj) => obj.key);
   const mirrors = (
