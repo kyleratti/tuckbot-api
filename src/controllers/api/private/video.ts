@@ -24,7 +24,7 @@ router.all("/*", (req, res, next) => {
   }
 
   if (req.headers["x-tuckbot-api-token"] != configurator.tuckbot.api.token) {
-    req.log.error(`Authentication failed`);
+    req.log.error(`Admin authentication failed`);
 
     return response(res, {
       status: HttpStatusCode.UNAUTHORIZED,

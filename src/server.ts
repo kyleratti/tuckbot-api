@@ -4,7 +4,7 @@ import express from "express";
 import expressPinoLogger from "express-pino-logger";
 import { configurator, logger } from "tuckbot-util";
 import { PrivateS3Api, PrivateVideoApi, PublicVideoApi } from "./controllers";
-import { database } from "./db";
+import { db } from "./db";
 
 logger.info(`Starting up...`);
 
@@ -36,12 +36,15 @@ export class ApiServer {
 
   async start() {
     try {
-      await database.connect();
+      await db.connect();
       logger.info(`Connected to database`);
     } catch (err) {
       logger.fatal({
         msg: `Unable to connect to database`,
-        error: err,
+        error: {
+          message: err.message,
+          stack: err.stack,
+        },
       });
     }
 
