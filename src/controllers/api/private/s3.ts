@@ -9,6 +9,7 @@ const router = Router();
 
 const apiToken = configurator.tuckbot.api.token;
 router.all("/*", (req, res, next) => {
+  // FIXME: move this authentication middleware to ../api
   if (!req.headers["x-tuckbot-api-token"]) {
     req.log.error(`Authentication attempted without authentication tokens`);
 
