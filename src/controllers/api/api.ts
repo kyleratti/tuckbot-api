@@ -3,7 +3,7 @@ import HttpStatusCode from "http-status-codes";
 import {
   DataOnlyResponse,
   isResponseData,
-  ResponseData
+  ResponseData,
 } from "../../structures";
 
 export function response(
@@ -19,9 +19,9 @@ export function response(
           ? responseData.message
           : responseData.status === HttpStatusCode.OK
           ? "OK"
-          : "RESPONSE PARSE ERROR"
+          : "RESPONSE PARSE ERROR",
       },
-      data: responseData.data
+      data: responseData.data,
     });
   }
 
@@ -29,8 +29,8 @@ export function response(
     status: {
       status: HttpStatusCode.OK, // TODO: deprecated key, remove later on
       code: HttpStatusCode.OK,
-      message: "OK"
+      message: "OK",
     },
-    data: responseData.data
+    data: responseData.data,
   });
 }
