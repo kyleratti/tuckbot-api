@@ -8,7 +8,7 @@ import {
 
 class DatabaseLogger implements TypeOrmLogger {
   logQuery = (query: string, parameters?: any[], queryRunner?: QueryRunner) => {
-    logger.info({
+    logger.debug({
       msg: `Database Query: ${query}`,
       databaseQuery: {
         parameters: parameters,
@@ -74,9 +74,6 @@ class DatabaseLogger implements TypeOrmLogger {
     message: any,
     queryRunner?: QueryRunner
   ) => {
-    const logFunc =
-      level === "log" || level === "info" ? logger.info : logger.warn;
-
     const logData = {
       msg: message,
       databaseQuery: {
