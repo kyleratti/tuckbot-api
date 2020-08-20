@@ -3,7 +3,7 @@ import HttpStatusCode from "http-status-codes";
 import { configurator } from "tuckbot-util";
 import { response } from "../";
 import { Video } from "../../../entity";
-import { S3Endpoint } from "../../../services";
+import { ACMApi, S3Endpoint } from "../../../services";
 
 const router = Router();
 
@@ -50,15 +50,23 @@ router.get("/all", async (req, res) => {
   });
 });
 
+const removeFromACM = (redditPostId: string) =>
+  ACMApi.remove({
+    redditPostId: redditPostId,
+    url: `${process.env.TUCKBOT_FRONTEND_URL}/${redditPostId}`,
+  });
+
 /**
- * FIXME: this very quickly overwhelms stdout and causes the node
- * process to hang indefinitely without warning. This needs to be
- * finished as all it does currently is output a list of files
- * that need to be purged (without acutally purging them)
+ * Deletes files in S3 storage that are no longer in the database.
+ *
+ * There's no point in paying to keep videos stored that the frontend
+ * is incapable of serving. It's a waste of money.
+ *
+ * WARN: This is a very database-intense operation.
  */
 router.delete("/prune", async (req, res) => {
   const files = (await S3Endpoint.getAll()).map((obj) => obj.key);
-  const mirrors = (
+  const dbMirrors = (
     await Video.find({
       select: ["redditPostId"],
       order: {
@@ -69,38 +77,95 @@ router.delete("/prune", async (req, res) => {
 
   const [purgedS3, purgedApi] = [new Array<string>(), new Array<string>()];
 
-  let key: string;
+  let fileName: string;
   let redditPostId: string;
   let exists = false;
 
-  files.forEach((file) => {
+  files.forEach(async (file) => {
     redditPostId = file.split(".")[0];
-    exists = mirrors.includes(redditPostId);
+    exists = dbMirrors.includes(redditPostId);
+
     if (!exists) {
-      // S3Endpoint.delete(key);
-      // req.log.info(
-      //   `Reddit Post ID '%s' exists in object storage but missing from tuckbot; removing from object storage`,
-      //   redditPostId
-      // );
-      purgedS3.push(key);
+      // if file exists in S3 but not the API, delete from S3
+      // and notify ACM to remove the mirror from reddit
+      try {
+        await S3Endpoint.delete(file);
+      } catch (err) {
+        req.log.error({
+          msg: `Unable to prune file from S3`,
+          redditPostId: redditPostId,
+          error: err,
+        });
+      }
+
+      try {
+        await removeFromACM(redditPostId);
+      } catch (err) {
+        req.log.error({
+          msg: `Unable to prune video from ACM`,
+          redditPostId: redditPostId,
+          error: err,
+        });
+      }
+
+      purgedS3.push(redditPostId);
     }
   });
 
-  mirrors.forEach((mirror) => {
-    key = `${mirror}.mp4`;
-    exists = files.includes(key);
+  for (const redditPostId of dbMirrors) {
+    fileName = `${redditPostId}.mp4`;
+    exists = files.includes(fileName);
 
     if (!exists) {
-      // mirror.remove();
-      // req.log.info(
-      //   `Reddit Post ID '%s' exists but '%s' missing from object storage; removing`,
-      //   mirror,
-      //   key
-      // );
+      // if the mirror exists in the API but not S3, delete from the API
+      // and notify ACM to remove the mirror from reddit
+      try {
+        const vid = await Video.findOne({
+          redditPostId: redditPostId,
+        });
+        await vid.remove();
+      } catch (err) {
+        req.log.error({
+          msg: `Unable to prune video from API`,
+          redditPostId: redditPostId,
+          error: err,
+        });
+      }
 
-      purgedApi.push(key);
+      try {
+        await ACMApi.remove({
+          redditPostId: redditPostId,
+          url: `${process.env.TUCKBOT_FRONTEND_URL}/watch/${redditPostId}`,
+        });
+
+        removeFromACM(redditPostId);
+      } catch (err) {
+        req.log.error({
+          msg: `Unable to prune video from ACM`,
+          redditPostId: redditPostId,
+          error: err,
+        });
+      }
+
+      purgedApi.push(redditPostId);
     }
-  });
+  }
+
+  if (purgedS3.length > 0)
+    req.log.info({
+      msg: `Removed video${
+        purgedS3.length === 1 ? "" : "s"
+      } from S3: no data in API`,
+      purgedFiles: purgedS3,
+    });
+
+  if (purgedApi.length > 0)
+    req.log.info({
+      msg: `Removed video${
+        purgedApi.length === 1 ? "" : "s"
+      } from API: no file on S3`,
+      purgedPosts: purgedApi,
+    });
 
   return response(res, {
     data: {
