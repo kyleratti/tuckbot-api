@@ -6,7 +6,9 @@
   "types": "dts/index.d.ts",
   "scripts": {
     "clean": "rimraf lib/*",
+    "prebuild": "npm run clean",
     "build": "tsc -p src",
+    "prewatch": "npm run clean",
     "watch": "tsc -p src -w",
     "prepublishOnly": "npm run build"
   },
