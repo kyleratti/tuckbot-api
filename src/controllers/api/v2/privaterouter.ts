@@ -1,5 +1,6 @@
 import { Router } from "express";
 import HttpStatusCode from "http-status-codes";
+import { configurator } from "tuckbot-util";
 import { respond } from "./actions";
 
 const router = Router();

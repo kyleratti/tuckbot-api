@@ -1,7 +1,9 @@
 import format from "date-format";
 import HttpStatusCode from "http-status-codes";
+import { configurator } from "tuckbot-util";
 import { LessThan } from "typeorm";
 import { Video } from "../../../../entity";
+import { ACMApi, S3Endpoint } from "../../../../services";
 import { respond } from "../actions";
 import { PrivateRouter } from "../privaterouter";
 
@@ -97,6 +99,116 @@ router.get("/stale", async (req, res) => {
     return respond(res, { videos: vids });
   } catch (err) {
     req.log.error({ msg: "Error retrieving stale video list", error: err });
+
+    return respond(res, {
+      status: { code: HttpStatusCode.INTERNAL_SERVER_ERROR },
+    });
+  }
+});
+
+router.get("/all", async (req, res) => {
+  try {
+    const videos = await Video.find({
+      order: {
+        createdAt: "DESC",
+      },
+    });
+
+    return respond(res, { videos: videos });
+  } catch (err) {
+    return respond(res, {
+      status: { code: HttpStatusCode.INTERNAL_SERVER_ERROR },
+    });
+  }
+});
+
+router.put("/", async (req, res) => {
+  const { redditPostId, redditPostTitle, mirrorUrl } = req.body;
+
+  if (!redditPostId || !redditPostTitle || !mirrorUrl)
+    return respond(res, {
+      status: { code: HttpStatusCode.UNPROCESSABLE_ENTITY },
+    });
+
+  try {
+    let vid = await Video.findOne({
+      redditPostId,
+    });
+
+    if (vid)
+      return respond(res, {
+        status: {
+          code: HttpStatusCode.SEE_OTHER,
+          message: "A mirror for this post already exists in the database",
+        },
+      });
+
+    vid = Video.create({
+      redditPostId,
+      redditPostTitle,
+      mirrorUrl,
+    });
+    await vid.save();
+
+    req.log.info({
+      msg: "Created video in database",
+      video: vid.toLoggable(),
+    });
+
+    return respond(res, {
+      status: { code: HttpStatusCode.CREATED },
+      video: {
+        redditPostId,
+        redditPostTitle,
+        mirrorUrl,
+      },
+    });
+  } catch (err) {
+    req.log.error({
+      msg: "Unable to create mirror in database",
+      error: err,
+    });
+
+    return respond(res, {
+      status: { code: HttpStatusCode.INTERNAL_SERVER_ERROR },
+    });
+  }
+});
+
+router.delete("/:redditPostId", async (req, res) => {
+  const { redditPostId } = req.params;
+
+  if (!redditPostId)
+    return respond(res, {
+      status: {
+        code: HttpStatusCode.UNPROCESSABLE_ENTITY,
+        message: "redditPostId not specified",
+      },
+    });
+
+  try {
+    const vid = await Video.findOne({
+      where: {
+        redditPostId,
+      },
+    });
+
+    if (!vid)
+      return respond(res, { status: { code: HttpStatusCode.NOT_FOUND } });
+
+    await ACMApi.remove({
+      redditPostId,
+      url: `${configurator.tuckbot.frontend.url}/${redditPostId}`,
+    });
+
+    await S3Endpoint.delete(`${redditPostId}.mp4`); // TODO: find a better way to get file names
+
+    await vid.remove();
+  } catch (err) {
+    req.log.error({
+      msg: "Unable to process removal",
+      error: err,
+    });
 
     return respond(res, {
       status: { code: HttpStatusCode.INTERNAL_SERVER_ERROR },
