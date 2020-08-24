@@ -4,6 +4,7 @@ import express from "express";
 import expressPinoLogger from "express-pino-logger";
 import { configurator, logger } from "tuckbot-util";
 import { PrivateS3Api, PrivateVideoApi, PublicVideoApi } from "./controllers";
+import { ApiRouterV2 } from "./controllers/api/v2";
 import { db } from "./db";
 
 logger.info(`Starting up...`);
@@ -29,6 +30,8 @@ export class ApiServer {
 
     app.use("/private/s3", PrivateS3Api);
     app.use("/private/video", PrivateVideoApi);
+
+    app.use("/v2", ApiRouterV2);
 
     this.app = app;
     this.port = port;
