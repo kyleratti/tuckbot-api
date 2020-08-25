@@ -2,11 +2,22 @@ import { Response } from "express";
 import HttpStatusCode from "http-status-codes";
 
 export interface ResponseStatus {
+  /**
+   * The HTTP status code to return
+   * @default 200
+   */
   code?: number;
+  /**
+   * The message to send with the status code.
+   * If no message is specified, the HTTP spec message for the code
+   * being returned will be used.
+   * @default "OK"
+   */
   message?: string;
 }
 
 interface ResponseData {
+  /** The status to indicate in the respond */
   status?: ResponseStatus;
   [key: string]: unknown;
 };

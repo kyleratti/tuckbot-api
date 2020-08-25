@@ -5,9 +5,9 @@ import { LessThan } from "typeorm";
 import { Video } from "../../../../entity";
 import { ACMApi, S3Endpoint } from "../../../../services";
 import { respond } from "../actions";
-import { PrivateRouter } from "../privaterouter";
+import { PrivateRouter } from "../router";
 
-const router = PrivateRouter;
+const router = PrivateRouter();
 
 const LessThanDate = (date: Date) =>
   LessThan(format(date, "YYYY-MM-DD HH:MM:SS"));

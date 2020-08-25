@@ -1,8 +1,9 @@
 import { Response } from "express";
 import HttpStatusCode from "http-status-codes";
 import { getConnection } from "typeorm";
-import { PublicRouter, respond, ResponseStatus } from "..";
+import { respond, ResponseStatus } from "..";
 import { Video } from "../../../../entity";
+import { PublicRouter } from "../router";
 
 const router = PublicRouter();
 
