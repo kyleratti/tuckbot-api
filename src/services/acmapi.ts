@@ -2,6 +2,8 @@ import request from "request-promise";
 import { configurator } from "tuckbot-util";
 import { ACMDeleteOptions, ACMUpdateOptions } from "../structures";
 
+// FIXME: move from request to axios
+
 export class ACMApi {
   static async update(data: ACMUpdateOptions) {
     return request({
