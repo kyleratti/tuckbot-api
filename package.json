@@ -8,6 +8,7 @@
     "clean": "rimraf lib/*",
     "prebuild": "npm run clean",
     "build": "tsc -p src",
+    "prebuild:watch": "npm run clean",
     "build:watch": "tsc -p src -w",
     "prewatch": "npm run clean",
     "watch": "tsc -p src -w",
@@ -24,7 +25,7 @@
   },
   "homepage": "https://github.com/kyleratti/tuckbot-api#readme",
   "dependencies": {
-    "aws-sdk": "^2.738.0",
+    "aws-sdk": "^2.739.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "date-format": "^3.0.0",
