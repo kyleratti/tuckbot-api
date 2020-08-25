@@ -196,17 +196,10 @@ router.delete("/:redditPostId", async (req, res) => {
     if (!vid)
       return respond(res, { status: { code: HttpStatusCode.NOT_FOUND } });
 
-    await ACMApi.remove({
-      redditPostId,
-      url: `${configurator.tuckbot.frontend.url}/${redditPostId}`,
-    });
-
-    await S3Endpoint.delete(`${redditPostId}.mp4`); // TODO: find a better way to get file names
-
     await vid.remove();
   } catch (err) {
     req.log.error({
-      msg: "Unable to process removal",
+      msg: "Unable to process removal from API",
       error: err,
     });
 
@@ -214,6 +207,37 @@ router.delete("/:redditPostId", async (req, res) => {
       status: { code: HttpStatusCode.INTERNAL_SERVER_ERROR },
     });
   }
+
+  try {
+    await ACMApi.remove({
+      redditPostId,
+      url: `${configurator.tuckbot.frontend.url}/${redditPostId}`,
+    });
+  } catch (err) {
+    req.log.error({
+      msg: "Unable to process removal from ACM",
+      error: err,
+    });
+
+    return respond(res, {
+      status: { code: HttpStatusCode.INTERNAL_SERVER_ERROR },
+    });
+  }
+
+  try {
+    await S3Endpoint.delete(`${redditPostId}.mp4`); // TODO: find a better way to get file names
+  } catch (err) {
+    req.log.error({
+      msg: "Unable to process removal from S3",
+      error: err,
+    });
+
+    return respond(res, {
+      status: { code: HttpStatusCode.INTERNAL_SERVER_ERROR },
+    });
+  }
+
+  return respond(res);
 });
 
 export const PrivateVideosApiRouter = router;
