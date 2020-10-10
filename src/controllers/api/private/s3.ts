@@ -123,7 +123,8 @@ router.delete("/prune", async (req, res) => {
         const vid = await Video.findOne({
           redditPostId: redditPostId,
         });
-        await vid.remove();
+
+        if (vid) await vid.remove();
       } catch (err) {
         req.log.error({
           msg: `Unable to prune video from API`,

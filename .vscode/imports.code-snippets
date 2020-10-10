@@ -1,0 +1,8 @@
+{
+  "HTTP Status Codes import": {
+    "description": "Imports the HttpStatusCodes module",
+    "prefix": ["httpcodes"],
+    "body": "import HttpStatusCode from \"http-status-codes\";",
+    "scope": "typescript,javascript"
+  }
+}

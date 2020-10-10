@@ -1,7 +1,9 @@
 import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
+import bearerToken from "express-bearer-token";
 import expressPinoLogger from "express-pino-logger";
+import passport from "passport";
 import { configurator, logger } from "tuckbot-util";
 import { PrivateS3Api, PrivateVideoApi, PublicVideoApi } from "./controllers";
 import { ApiRouterV2 } from "./controllers/api/v2";
@@ -25,6 +27,15 @@ export class ApiServer {
     app.use(bodyParser.json());
 
     app.use(cors());
+
+    app.use(bearerToken());
+    app.use(passport.initialize());
+    // app.use(
+    //   expressSession({
+    //     secret: "cats",
+    //   })
+    // );
+    // app.use(passport.session()); //
 
     app.use("/public/video", PublicVideoApi);
 
