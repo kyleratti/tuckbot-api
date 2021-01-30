@@ -99,7 +99,7 @@ router.get("/stalevideos", async (req, res) => {
   minimumAge.setDate(now.getDay() - 1);
 
   const repruneAge = new Date();
-  repruneAge.setDate(now.getDay() - 30);
+  repruneAge.setDate(now.getDay() - 20);
 
   req.log.debug({
     msg: `Retrieving stale videos`,
